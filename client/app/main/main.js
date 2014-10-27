@@ -4,7 +4,7 @@ angular.module('derConnectApp')
   .config(function ($stateProvider) {
     $stateProvider
       .state('main', {
-        url: '/',
+        url: '/front',
         templateUrl: 'app/main/main.html',
         controller: 'MainCtrl'
       });
