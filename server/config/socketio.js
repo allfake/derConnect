@@ -5,7 +5,8 @@
 'use strict';
 
 var config = require('./environment');
-
+var piSocket = [];
+var userSocket = [];
 // When the user disconnects.. perform this
 function onDisconnect(socket) {
 }
@@ -14,9 +15,13 @@ function onDisconnect(socket) {
 function onConnect(socket) {
   // When the client emits 'info', this listens and executes
   socket.on('info', function (data) {
-    console.info('[%s] %s', socket.address, JSON.stringify(data, null, 2));
+    //console.info('[%s] %s', socket.address, JSON.stringify(data, null, 2));
   });
 
+  if (socket["handshake"] && socket["handshake"]["query"] && socket["handshake"]["query"]["serial_number"]) {
+    piSocket[socket["handshake"]["query"]["serial_number"]] = socket;
+  } 
+  
   // Insert sockets below
   require('../api/pi/pi.socket').register(socket);
   require('../api/thing/thing.socket').register(socket);
@@ -44,6 +49,8 @@ module.exports = function (socketio) {
             process.env.DOMAIN;
 
     socket.connectedAt = new Date();
+
+
 
     // Call onDisconnect.
     socket.on('disconnect', function () {
