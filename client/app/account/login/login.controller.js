@@ -4,7 +4,8 @@ angular.module('derConnectApp')
   .controller('LoginCtrl', function ($scope, Auth, $location, $window) {
     $scope.user = {};
     $scope.errors = {};
-
+    $scope.user.email = "test@test.com";
+    $scope.user.password = "test";
     $scope.login = function(form) {
       $scope.submitted = true;
 

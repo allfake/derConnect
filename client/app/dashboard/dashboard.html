@@ -1,10 +1,40 @@
 <div ng-include="'components/navbar/navbar.html'"></div>
-<form >
-  <button class="btn " ng-click="addPi()">Add new Raspberry pi</button>
-  <input type="text" name="serialNumber" ng-model="newSerialNumber"/>
-</form>
-<div ng-repeat="pi in pis" >
-  <div> {{pi.serial_number}} 
-    <button ng-click="deletePi(pi)"> delete </button>
-  </div> 
+
+<div class="container">
+
+  <div class="alert alert-info" role="alert">
+    <a href="#" class="" ng-init="dialogAddPi = 0" ng-click="dialogAddPi = !dialogAddPi"> 
+      Add new Raspberry pi
+      <span class="glyphicon glyphicon-plus"></span>
+    </a>
+  </div>
+
+
+  <div ng-repeat="pi in pis" >
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div> 
+          {{pi.serial_number}} 
+        </div>
+      </div>
+      <div class="panel-body">
+        <button type="button" class="btn btn-default" ng-click="deletePi(pi)"> delete </button>
+        <button type="button" class="btn btn-default" ng-click="playSound(pi)"> Play sound </button>
+        <button type="button" class="btn btn-default" ng-click="dialogShown = !dialogShown"> Action </button>
+      </div>
+    </div> 
+  </div>
+
+  <modal-dialog show='dialogAddPi' dialog-title='New raspbery pi'>
+    <form name="piForm">
+      <div class="form-group">
+        <label for="serial number">Serial number</label>
+        <input type="text" class="form-control" name="serialNumber" ng-model="pi.newSerialNumber" />
+      </div>
+      <div class="form-group">
+        <button type="button" class="btn btn-default" ng-click="addPi()">Add</button>
+      </div>
+
+    </form>
+  </modal-dialog>
 </div>

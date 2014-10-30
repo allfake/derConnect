@@ -16,7 +16,6 @@ angular.module('derConnectApp')
       $http.post('/api/things', { name: $scope.newThing });
       $scope.newThing = '';
     };
-    
 
     $scope.deleteThing = function(thing) {
       $http.delete('/api/things/' + thing._id);

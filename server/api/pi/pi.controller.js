@@ -22,7 +22,6 @@ exports.show = function(req, res) {
 
 // Creates a new pi in the DB.
 exports.create = function(req, res) {
-  console.log(req.body);
   Pi.create(req.body, function(err, pi) {
     if(err) { return handleError(res, err); }
     return res.json(201, pi);

@@ -4,24 +4,64 @@
 
 'use strict';
 
+var _ = require('lodash');
 var config = require('./environment');
+var mongoose = require('mongoose');
+
 var piSocket = [];
 var userSocket = [];
 // When the user disconnects.. perform this
 function onDisconnect(socket) {
+
+  if (socket["handshake"] && socket["handshake"]["query"] 
+    && typeof socket["handshake"]["query"]["serial_number"] != 'undefined'
+    && socket["handshake"]["query"]["serial_number"]) {
+    delete piSocket[socket["handshake"]["query"]["serial_number"]];
+    
+    console.info('pi online: ' + _.keys(piSocket).length);
+  } 
+
+  if (socket["handshake"] && socket["handshake"]["query"] 
+    && typeof socket["handshake"]["query"]["user_id"] != "undefined" 
+    && socket["handshake"]["query"]["user_id"]) {
+
+    delete userSocket[socket["handshake"]["query"]["user_id"]];
+    
+    console.info('user online: ' + _.keys(userSocket).length);
+  } 
+
 }
 
 // When the user connects.. perform this
 function onConnect(socket) {
+
+  // console.log(socket.handshake.query);
+
   // When the client emits 'info', this listens and executes
   socket.on('info', function (data) {
-    //console.info('[%s] %s', socket.address, JSON.stringify(data, null, 2));
+    console.info('[%s] %s', socket.address, JSON.stringify(data, null, 2));
   });
 
-  if (socket["handshake"] && socket["handshake"]["query"] && socket["handshake"]["query"]["serial_number"]) {
+  if (socket["handshake"] && socket["handshake"]["query"] 
+    && typeof socket["handshake"]["query"]["serial_number"] != 'undefined'
+    && socket["handshake"]["query"]["serial_number"]) {
     piSocket[socket["handshake"]["query"]["serial_number"]] = socket;
+    
+    console.info('pi online: ' + _.keys(piSocket).length);
   } 
-  
+
+  if (socket["handshake"] && socket["handshake"]["query"] 
+    && typeof socket["handshake"]["query"]["user_id"] != "undefined" 
+    && socket["handshake"]["query"]["user_id"]) {
+
+    // console.log(typeof socket["handshake"]["query"]["user_id"]);
+    // console.log(socket["handshake"]["query"]["user_id"]);
+    userSocket[socket["handshake"]["query"]["user_id"]] = socket;
+    
+    console.info('user online: ' + _.keys(userSocket).length);
+    // console.info('user online: ' + _.keys(userSocket));
+  } 
+
   // Insert sockets below
   require('../api/pi/pi.socket').register(socket);
   require('../api/thing/thing.socket').register(socket);
@@ -50,7 +90,14 @@ module.exports = function (socketio) {
 
     socket.connectedAt = new Date();
 
+    socket.on('pi:action', function (data) {
 
+      // console.info(data);
+      if (typeof piSocket[data.serial_number] != 'undefined') {
+        piSocket[data.serial_number].emit("pi:action", "play sound");
+      }
+
+    });
 
     // Call onDisconnect.
     socket.on('disconnect', function () {
