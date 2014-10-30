@@ -3,27 +3,51 @@
 <div class="container">
 
   <div class="alert alert-info" role="alert">
-    <a href="#" class="" ng-init="dialogAddPi = 0" ng-click="dialogAddPi = !dialogAddPi"> 
+    <a href="#" class=""> 
+      Happy to see you.
+    </a>
+    <a href="#" class="pull-right btn btn-default btn-xs" ng-init="dialogAddPi = 0" ng-click="dialogAddPi = !dialogAddPi"> 
       Add new Raspberry pi
-      <span class="glyphicon glyphicon-plus"></span>
+      <span class="glyphicon glyphicon-heart"></span>
     </a>
   </div>
 
 
   <div ng-repeat="pi in pis" >
-    <div class="panel panel-default">
+    <div class="panel panel-default" ng-class="pi.status ? 'panel-success' : 'panel-danger'">
       <div class="panel-heading">
-        <div> 
-          {{pi.serial_number}} 
+        <div class="center">
+          Serial number : {{pi.serial_number}} 
+          | 
+          <span ng-show="pi.status">Status Online</span>
+          <span ng-hide="pi.status">Status Offline</span>
         </div>
       </div>
       <div class="panel-body">
-        <button type="button" class="btn btn-default" ng-click="deletePi(pi)"> delete </button>
-        <button type="button" class="btn btn-default" ng-click="playSound(pi)"> Play sound </button>
-        <button type="button" class="btn btn-default" ng-click="dialogShown = !dialogShown"> Action </button>
+          <button type="button" class="btn btn-default" ng-click="deletePi(pi)"> delete </button>
+          <button type="button" class="btn btn-default" ng-click="playSound(pi)"> Play sound </button>
+          <button type="button" class="btn btn-info pull-right " ng-click="dialogAction = !dialogAction"> Action </button>
       </div>
+      <modal-dialog show='dialogAction' dialog-title='Play' class="action">
+        <!-- <form name="piForm row"> -->
+          <div class="list-group">
+            <a href="#" class="list-group-item col-md-offset-3 col-md-6">
+              <h4 class="list-group-item-heading">Play sound</h4>
+            </a>
+            <a href="#" class="list-group-item col-md-offset-3 col-md-6">
+              <h4 class="list-group-item-heading">Take picture</h4>
+            </a>
+            <a href="#" class="list-group-item col-md-offset-3 col-md-6">
+              <h4 class="list-group-item-heading">Print </h4>
+              <input ng-trim="true" ng-maxlength="100" type="text" class="list-group-item-heading"></input>
+              <button type="button" class="btn btn-default" ng-click="addPi()">Print</button>
+            </a>
+          </div>
+        <!-- </form> -->
+      </modal-dialog>
     </div> 
   </div>
+</div>
 
   <modal-dialog show='dialogAddPi' dialog-title='New raspbery pi'>
     <form name="piForm">
@@ -34,7 +58,6 @@
       <div class="form-group">
         <button type="button" class="btn btn-default" ng-click="addPi()">Add</button>
       </div>
-
     </form>
   </modal-dialog>
 </div>

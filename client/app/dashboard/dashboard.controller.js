@@ -8,6 +8,9 @@ angular.module('derConnectApp')
 
     $http.get('/api/pis').success(function(pis) {
       $scope.pis = pis;
+      socket.piOnline($scope.pis);
+      socket.piOffline($scope.pis);
+      
       socket.syncUpdates('pi', $scope.pis, function() {
         $scope.dialogAddPi = 0;
       });
@@ -29,6 +32,7 @@ angular.module('derConnectApp')
     $scope.playSound = function(pi) {
       socket.playSound(pi);
     }
+
 
     $scope.$on('$destroy', function () {
       socket.unsyncUpdates('pi');

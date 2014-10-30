@@ -35,6 +35,36 @@ angular.module('derConnectApp')
         socket.emit('pi:action', pi);
       },
 
+      piAction: function(pi, action) {
+        socket.emit('pi:action', pi);
+      },
+
+      piOnline: function (array) {
+
+        socket.on('pi:online', function (data) {
+          array = _.map(array, function (pi) {
+            if (pi.serial_number == data.serial_number) {
+              pi.status = 1;
+            } else {
+              pi.status = 0;
+            }
+            return pi;
+          });
+        });
+      },
+
+      piOffline: function (array) {
+        
+        socket.on('pi:offline', function (data) {
+          array = _.map(array, function (pi) {
+            if (pi.serial_number == data.serial_number) {
+              pi.status = 0;
+            }
+            return pi;            
+          });
+        })
+      },
+
       /**
        * Register listeners to sync an array with updates on a model
        *

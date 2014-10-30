@@ -7,6 +7,7 @@
 var _ = require('lodash');
 var config = require('./environment');
 var mongoose = require('mongoose');
+var Pi = require('../api/pi/pi.model');
 
 var piSocket = [];
 var userSocket = [];
@@ -16,8 +17,24 @@ function onDisconnect(socket) {
   if (socket["handshake"] && socket["handshake"]["query"] 
     && typeof socket["handshake"]["query"]["serial_number"] != 'undefined'
     && socket["handshake"]["query"]["serial_number"]) {
-    delete piSocket[socket["handshake"]["query"]["serial_number"]];
     
+    var serialNumber = socket["handshake"]["query"]["serial_number"];
+
+    delete piSocket[serialNumber];
+
+    Pi.find({serial_number: serialNumber}, function (err, pis) {
+      if (err) return console.info('err : ' + err);
+      if (!pis) return console.info('not found pis');
+
+      _.each(pis, function(pi) {
+
+        if (userSocket[pi.user_id]) {
+          userSocket[pi.user_id].emit('pi:offline', pi);
+        }
+        
+      });
+    });
+
     console.info('pi online: ' + _.keys(piSocket).length);
   } 
 
@@ -39,14 +56,29 @@ function onConnect(socket) {
 
   // When the client emits 'info', this listens and executes
   socket.on('info', function (data) {
-    console.info('[%s] %s', socket.address, JSON.stringify(data, null, 2));
+    // console.info('[%s] %s', socket.address, JSON.stringify(data, null, 2));
   });
 
   if (socket["handshake"] && socket["handshake"]["query"] 
     && typeof socket["handshake"]["query"]["serial_number"] != 'undefined'
     && socket["handshake"]["query"]["serial_number"]) {
-    piSocket[socket["handshake"]["query"]["serial_number"]] = socket;
-    
+
+    var serialNumber = socket["handshake"]["query"]["serial_number"];
+    piSocket[serialNumber] = socket;
+
+    Pi.find({serial_number: serialNumber}, function (err, pis) {
+      if (err) return console.info('err : ' + err);
+      if (!pis) return console.info('not found pis');
+
+      _.each(pis, function(pi) {
+
+        if (userSocket[pi.user_id]) {
+          userSocket[pi.user_id].emit('pi:online', pi);
+        }
+
+      });
+    });
+
     console.info('pi online: ' + _.keys(piSocket).length);
   } 
 
@@ -54,12 +86,24 @@ function onConnect(socket) {
     && typeof socket["handshake"]["query"]["user_id"] != "undefined" 
     && socket["handshake"]["query"]["user_id"]) {
 
-    // console.log(typeof socket["handshake"]["query"]["user_id"]);
-    // console.log(socket["handshake"]["query"]["user_id"]);
-    userSocket[socket["handshake"]["query"]["user_id"]] = socket;
+    var userId = socket["handshake"]["query"]["user_id"];
+
+    userSocket[userId] = socket;
     
+    Pi.find({user_id: userId}, function (err, pis) {
+      if (err) return console.info('err : ' + err);
+      if (!pis) return console.info('not found pis');
+
+      _.each(pis, function(pi) {
+
+        if (piSocket[pi.serial_number]) {
+          socket.emit('pi:online', pi);
+        }
+
+      });
+    });
+
     console.info('user online: ' + _.keys(userSocket).length);
-    // console.info('user online: ' + _.keys(userSocket));
   } 
 
   // Insert sockets below
@@ -102,11 +146,11 @@ module.exports = function (socketio) {
     // Call onDisconnect.
     socket.on('disconnect', function () {
       onDisconnect(socket);
-      console.info('[%s] DISCONNECTED', socket.address);
+      // console.info('[%s] DISCONNECTED', socket.address);
     });
 
     // Call onConnect.
     onConnect(socket);
-    console.info('[%s] CONNECTED', socket.address);
+    // console.info('[%s] CONNECTED', socket.address);
   });
 };
