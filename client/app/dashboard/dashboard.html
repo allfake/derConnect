@@ -3,9 +3,9 @@
 <div class="container">
 
   <div class="alert alert-info" role="alert">
-    <a href="#" class=""> 
+    <span> 
       Happy to see you.
-    </a>
+    </span>
     <a href="#" class="pull-right btn btn-default btn-xs" ng-init="dialogAddPi = 0" ng-click="dialogAddPi = !dialogAddPi"> 
       Add new Raspberry pi
       <span class="glyphicon glyphicon-heart"></span>
@@ -13,7 +13,7 @@
   </div>
 
 
-  <div ng-repeat="pi in pis" >
+  <div ng-repeat="pi in pis | orderBy : 'serial_number' : false" >
     <div class="panel panel-default" ng-class="pi.status ? 'panel-success' : 'panel-danger'">
       <div class="panel-heading">
         <div class="center">
@@ -21,17 +21,49 @@
           | 
           <span ng-show="pi.status">Status Online</span>
           <span ng-hide="pi.status">Status Offline</span>
+          <button type="button" class="close pull-right" ng-click="deletePi(pi)"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
         </div>
       </div>
       <div class="panel-body">
-          <button type="button" class="btn btn-default" ng-click="deletePi(pi)"> delete </button>
           <button type="button" class="btn btn-default" ng-click="playSound(pi)"> Play sound </button>
           <button type="button" class="btn btn-info pull-right " ng-click="dialogAction = !dialogAction"> Action </button>
+          <button type="button" class="btn btn-info pull-right " ng-click="dialogSchedule = !dialogSchedule"> Schedule </button>
       </div>
+
+      <modal-dialog show='dialogSchedule' dialog-title='Schedule' class="action">
+        <tabset justified="true">
+          <tab heading="Schedule list">
+            <div ng-repeat="schedule in pi.schedule">
+              <div>{{schdule.name}}</div>
+              <div>{{schdule.type}}</div>
+              <div>{{schdule.fire}}</div>
+              <button type="button" class="btn btn-info pull-right " ng-click="deleteSchedule(pi, schedule)">Delete</button>
+            </div>
+          </tab>
+          <tab heading="New schedule">
+            <div class="row"> 
+              <div class="col-xs-6">
+                  Name
+                  <input type="text" ng-model="schdule.name" class="form-control" placeholder="Schedule name"  ng-init="schdule.name = 'New schdule'"/>
+              </div>
+            </div>
+            <div class="row"> 
+              <div class="col-xs-6">
+                  Action
+                <select class="form-control" ng-model="schdule.type" ng-options="opt for opt in options.type"></select>
+              </div>
+            </div>
+            <br>
+            <span class="">Set time</span>
+            <timepicker ng-model="schdule.fire" ng-change="changed()" hour-step="1" minute-step="1" show-meridian="ismeridian"></timepicker>
+            <button type="button" class="btn btn-default" ng-click="addSchedule(pi, schdule)">Add</button>
+          </tab>
+        </tabset>
+      </modal-dialog>
+
       <modal-dialog show='dialogAction' dialog-title='Play' class="action">
-        <!-- <form name="piForm row"> -->
           <div class="list-group">
-            <a href="#" class="list-group-item col-md-offset-3 col-md-6">
+            <a href="#" class="list-group-item col-md-offset-3 col-md-6" ng-click="playSound(pi)">
               <h4 class="list-group-item-heading">Play sound</h4>
             </a>
             <a href="#" class="list-group-item col-md-offset-3 col-md-6">
@@ -39,15 +71,15 @@
             </a>
             <a href="#" class="list-group-item col-md-offset-3 col-md-6">
               <h4 class="list-group-item-heading">Print </h4>
-              <input ng-trim="true" ng-maxlength="100" type="text" class="list-group-item-heading"></input>
+              <input ng-trim="true" ng-maxlength="100" type="text" class="list-group-item-heading" />
               <button type="button" class="btn btn-default" ng-click="addPi()">Print</button>
             </a>
           </div>
-        <!-- </form> -->
       </modal-dialog>
     </div> 
   </div>
 </div>
+
 
   <modal-dialog show='dialogAddPi' dialog-title='New raspbery pi'>
     <form name="piForm">

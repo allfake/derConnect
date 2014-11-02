@@ -34,9 +34,15 @@ exports.update = function(req, res) {
   Pi.findById(req.params.id, function (err, pi) {
     if (err) { return handleError(res, err); }
     if(!pi) { return res.send(404); }
+
     var updated = _.merge(pi, req.body);
+
+    pi.schedule = req.body.schedule;
+    pi.action = req.body.action;
+
+    console.log(updated);
     updated.save(function (err) {
-      if (err) { return handleError(res, err); }
+      if (err) {console.log(err); return handleError(res, err); }
       return res.json(200, pi);
     });
   });

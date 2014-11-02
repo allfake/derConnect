@@ -3,17 +3,28 @@ var socketio = require('../../config/socketio');
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
+
+var ActionSchema = new Schema({
+  name: String,
+  data: String,
+  type: String
+})
+
+var ScheduleSchema = new Schema({
+  name: String,
+  data: String,
+  type: String,
+  fire: Date,
+  interval: Number,
+  interval_type: String
+})
+
 var PiSchema = new Schema({
   name: String,
   serial_number: String,
   user_id: String,
-  action: [ 
-    {
-      name: String,
-      data: String,
-      type: String
-    }
-  ],
+  action: [ActionSchema],
+  schedule: [ScheduleSchema],
   info: String,
   active: Boolean
 });
@@ -34,4 +45,6 @@ PiSchema
     });
 }, 'The specified serial number is already in use.');
 
+module.exports = mongoose.model('action', ActionSchema);
+module.exports = mongoose.model('schedule', ScheduleSchema);
 module.exports = mongoose.model('Pi', PiSchema);
