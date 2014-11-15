@@ -142,6 +142,26 @@ module.exports = function (socketio) {
       }
 
     });
+    
+    socket.on('pi:localIp', function (data) {
+
+      var serialNumber = socket["handshake"]["query"]["serial_number"];
+
+      Pi.find({serial_number: serialNumber}, function (err, pis) {
+        if (err) return console.info('err : ' + err);
+        if (!pis) return console.info('not found pis');
+
+        _.each(pis, function(pi) {
+
+          if (userSocket[pi.user_id]) {
+            userSocket[pi.user_id].emit("pi:receive:localIp:" + serialNumber, data);
+          }
+
+        });
+      });
+
+      
+    });
 
     // Call onDisconnect.
     socket.on('disconnect', function () {

@@ -65,6 +65,18 @@ angular.module('derConnectApp')
         })
       },
 
+      piReceive: function(thing, serial_number, pi, cb) {
+        cb = cb || angular.noop;
+        socket.on('pi:receive:' + thing + ":" + serial_number, function (item) {
+
+          pi[thing] = item;
+
+          cb(thing, item, pi);
+
+        });
+
+      },
+
       /**
        * Register listeners to sync an array with updates on a model
        *

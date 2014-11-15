@@ -6,15 +6,21 @@ angular.module('derConnectApp')
     $scope.pi = {};
     $scope.pi.newSerialNumber = "";
 
-
-
     $http.get('/api/pis').success(function(pis) {
       $scope.pis = pis;
       socket.piOnline($scope.pis);
       socket.piOffline($scope.pis);
-      
-      socket.syncUpdates('pi', $scope.pis, function(event) {
 
+      for (var i = 0; i < $scope.pis.length; i++) {
+        var pi = $scope.pis[i];
+        pi.localIp = "";
+        socket.piReceive('localIp', pi.serial_number, pi)
+
+      };
+
+
+      socket.syncUpdates('pi', $scope.pis, function(event) {
+               
       });
     });
 

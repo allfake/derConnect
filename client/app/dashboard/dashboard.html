@@ -28,6 +28,7 @@
           <button type="button" class="btn btn-default" ng-click="playSound(pi)"> Play sound </button>
           <button type="button" class="btn btn-info pull-right " ng-click="dialogAction = !dialogAction"> Action </button>
           <button type="button" class="btn btn-info pull-right " ng-click="dialogSchedule = !dialogSchedule"> Schedule </button>
+          <div ng-show="pi.localIp">Local ip {{pi.localIp}}</div>
       </div>
 
       <modal-dialog show='dialogSchedule' dialog-title='Schedule' class="action">
