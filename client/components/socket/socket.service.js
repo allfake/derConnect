@@ -69,9 +69,15 @@ angular.module('derConnectApp')
         cb = cb || angular.noop;
         socket.on('pi:receive:' + thing + ":" + serial_number, function (item) {
 
-          pi[thing] = item;
+          angular.forEach(pi.receive, function (value, key) {
+            if (value.type == thing) {
 
-          cb(thing, item, pi);
+              pi.receive[key].data = item;
+              pi.receive[key].last_update = new Date();
+
+              cb(thing, item, pi);
+            }
+          });
 
         });
 
@@ -100,11 +106,44 @@ angular.module('derConnectApp')
 
           // replace oldItem if it exists
           // otherwise just add item to the collection
+
           if (oldItem) {
+
+            angular.forEach(oldItem.receive, function (value) {
+              socket.removeAllListeners('pi:receive:' + value.type + ":" + oldItem.serial_number);
+            })
+
+            if (item.receive) {
+              item.receive.edit = {};
+            }
+
+            if (oldItem.status) {
+              item.status = oldItem.status;
+            }
+
             array.splice(index, 1, item);
             event = 'updated';
           } else {
             array.push(item);
+          }
+
+
+          for (var i = 0; i < array.length; i++) {
+            var pi = array[i];
+
+            angular.forEach(pi.receive, function (receive) {
+              socket.on('pi:receive:' + receive.type + ":" + pi.serial_number, function (item) {
+
+                angular.forEach(pi.receive, function (value, key) {
+                  if (value.type == receive.type) {
+
+                    pi.receive[key].data = item;
+                    pi.receive[key].last_update = new Date();
+                  }
+                });
+
+              });
+            });
           }
 
           cb(event, item, array);

@@ -7,7 +7,8 @@ var mongoose = require('mongoose'),
 var ActionSchema = new Schema({
   name: String,
   data: String,
-  type: String
+  type: String,
+  display_name: String
 })
 
 var ScheduleSchema = new Schema({
@@ -16,7 +17,16 @@ var ScheduleSchema = new Schema({
   type: String,
   fire: Date,
   interval: Number,
-  interval_type: String
+  interval_type: String,
+  display_name: String
+})
+
+var ReceiveSchema = new Schema({
+  name: String,
+  data: String,
+  type: String,
+  display_name: String,
+  last_update: Date
 })
 
 var PiSchema = new Schema({
@@ -25,6 +35,7 @@ var PiSchema = new Schema({
   user_id: String,
   action: [ActionSchema],
   schedule: [ScheduleSchema],
+  receive: [ReceiveSchema],
   info: String,
   active: Boolean
 });
@@ -46,5 +57,6 @@ PiSchema
 }, 'The specified serial number is already in use.');
 
 module.exports = mongoose.model('action', ActionSchema);
+module.exports = mongoose.model('receive', ReceiveSchema);
 module.exports = mongoose.model('schedule', ScheduleSchema);
 module.exports = mongoose.model('Pi', PiSchema);

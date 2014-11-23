@@ -143,8 +143,10 @@ module.exports = function (socketio) {
 
     });
     
-    socket.on('pi:localIp', function (data) {
+    socket.on('pi:receive', function (item) {
 
+      var thing = item.split(',')[0];
+      var data = item.split(',')[1];
       var serialNumber = socket["handshake"]["query"]["serial_number"];
 
       Pi.find({serial_number: serialNumber}, function (err, pis) {
@@ -152,9 +154,8 @@ module.exports = function (socketio) {
         if (!pis) return console.info('not found pis');
 
         _.each(pis, function(pi) {
-
           if (userSocket[pi.user_id]) {
-            userSocket[pi.user_id].emit("pi:receive:localIp:" + serialNumber, data);
+            userSocket[pi.user_id].emit("pi:receive:" + thing + ":" + serialNumber, data);
           }
 
         });

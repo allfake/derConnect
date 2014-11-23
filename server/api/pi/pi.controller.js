@@ -38,6 +38,7 @@ exports.update = function(req, res) {
     var updated = _.merge(pi, req.body);
 
     pi.schedule = req.body.schedule;
+    pi.receive = req.body.receive;
     pi.action = req.body.action;
 
     console.log(updated);

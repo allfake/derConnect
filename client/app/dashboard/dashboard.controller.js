@@ -8,15 +8,18 @@ angular.module('derConnectApp')
 
     $http.get('/api/pis').success(function(pis) {
       $scope.pis = pis;
+      
       socket.piOnline($scope.pis);
       socket.piOffline($scope.pis);
 
       for (var i = 0; i < $scope.pis.length; i++) {
         var pi = $scope.pis[i];
-        pi.localIp = "";
-        socket.piReceive('localIp', pi.serial_number, pi)
 
-      };
+        angular.forEach(pi.receive, function (value) {
+          socket.piReceive(value.type, pi.serial_number, pi)
+        });
+
+      }
 
 
       socket.syncUpdates('pi', $scope.pis, function(event) {
@@ -45,7 +48,10 @@ angular.module('derConnectApp')
     }
 
     $scope.updatePi = function(pi) {
-      // $http.put('/api/pis/' + pi._id, { pi });
+
+      $http.put('/api/pis/' + pi._id, pi).success(function (data) {
+
+      });
     }
 
     $scope.addSchedule = function(pi, schedule) {
@@ -53,6 +59,30 @@ angular.module('derConnectApp')
         pi.schedule = []; 
       }
       pi.schedule.push(schedule);
+
+      $http.put('/api/pis/' + pi._id, pi).success(function (data) {
+
+      });
+    }
+
+    $scope.addReceive = function(pi, receive) {
+      if (pi.receive.length == 0) {
+        pi.receive = []; 
+      }
+      pi.receive.push(receive);
+      
+      $http.put('/api/pis/' + pi._id, pi).success(function (data) {
+
+      });
+    }
+
+    $scope.removeReceive = function(pi, receive) {
+      if (pi.receive.length == 0) {
+        pi.receive = []; 
+      }
+      pi.receive.push(receive);
+      
+      pi.receive = _.remove(pi.receive, function(s) { return s != receive; });
 
       $http.put('/api/pis/' + pi._id, pi).success(function (data) {
 

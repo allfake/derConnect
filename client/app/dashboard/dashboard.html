@@ -29,7 +29,91 @@
           <button type="button" class="btn btn-info pull-right " ng-click="dialogAction = !dialogAction"> Action </button>
           <button type="button" class="btn btn-info pull-right " ng-click="dialogSchedule = !dialogSchedule"> Schedule </button>
           <div ng-show="pi.localIp">Local ip {{pi.localIp}}</div>
+          <hr/>
+          <div ng-init="receive.edit = {}" ng-repeat="receive in pi.receive" ng-mouseover="showEditReceive = true" ng-mouseleave="showEditReceive = false">
+            <a class="pull-right" ng-show="showEditReceive && !receive.edit.type" ng-click="removeReceive(pi, receive)">Remove</a>
+            <div>
+              <label>Name</label>
+              <span ng-click="receive.edit.tempName = receive.type; receive.edit.name = true">
+                <span ng-hide="receive.edit.name">
+                  {{receive.name}}
+                </span>
+              </span>
+              <span ng-show="receive.edit.name">
+                <span>
+                  <input ng-model="receive.name"/>
+                </span>
+                <button type="button" class="btn btn-default" ng-click="updatePi(pi); receive.edit.name = false;">Save</button>
+                <button type="button" class="btn btn-default" ng-click="receive.type = receive.edit.tempName; receive.edit.name = false">Cancel</button>
+              </span>
+              <a ng-show="showEditReceive && !receive.edit.name" ng-click="receive.edit.tempName = receive.type; receive.edit.name = true">Edit</a>
+            </div>
+            <div>
+            <label>Type</label>
+              <span ng-click="receive.edit.tempType = receive.type; receive.edit.type = true;">
+                <span ng-hide="receive.edit.type">
+                  {{receive.type}}
+                </span>
+              </span>
+              <span ng-show="receive.edit.type">
+                <input ng-model="receive.type"/>
+                <button type="button" class="btn btn-default" ng-click="updatePi(pi); receive.edit.type = false;">Save</button>
+                <button type="button" class="btn btn-default" ng-click="receive.edit.type = false; receive.type = receive.edit.tempType">Cancel</button>
+              </span>
+              <a ng-show="showEditReceive && !receive.edit.type" ng-click="receive.edit.tempType = receive.type; receive.edit.type = true">Edit</a>
+            </div>
+            <div>
+              <label>data</label>
+              <span>
+                {{receive.data || 'Waitting for data'}}
+
+                <div ng-if="receive.data">
+                  <label>Last Update</label>
+                  {{receive.last_update | date:"medium"}}
+                </div>
+              </span>
+            </div>
+            <hr/>
+          </div>
       </div>
+      <div class="panel-footer">
+        <div>
+          <a ng-click="actionEditting = true">
+            Add Action
+          </a>
+          <span ng-show="actionEditting" ng-click="actionEditting = false">Cancel</span>
+          <div ng-show="actionEditting">
+            <label>Action</label>
+            <input type="text"/> 
+            <button type="button" class="btn btn-default" ng-click="actionEditting = false;">Save</button>
+          </div>
+        </div>
+        <div>
+          <a ng-click="scheduleEditting = true">
+            Add Schedule
+          </a>
+          <span ng-show="scheduleEditting" ng-click="scheduleEditting = false">Cancel</span>
+          <div ng-show="scheduleEditting">
+            <label>Schedule</label>
+            <input type="text"/> 
+            <button type="button" class="btn btn-default" ng-click="scheduleEditting = false;">Save</button>
+          </div>
+        </div>
+        <div>
+          <a ng-click="receiveEditting = true">
+            Add Receive
+          </a>
+          <span ng-show="receiveEditting" ng-click="receiveEditting = false">Cancel</span>
+          <div ng-show="receiveEditting">
+            <label>Name</label>
+            <input type="text" ng-model="newReceive.name"/>
+            <label>Type</label>
+            <input type="text" ng-model="newReceive.type"/> 
+            <button type="button" class="btn btn-default" ng-click="addReceive(pi, newReceive); receiveEditting = false;">Save</button>
+          </div>
+        </div>
+      </div>
+
 
       <modal-dialog show='dialogSchedule' dialog-title='Schedule' class="action">
         <tabset justified="true">
