@@ -5,21 +5,23 @@ angular.module('derConnectApp')
   .factory('socket', function(socketFactory, Auth, User) {
 
     // socket.io now auto-configures its connection when we ommit a connection url
-
+    var socket = {};
+    var currentUser = Auth.getCurrentUser();
     var user_query = '';
-    if (Auth.isLoggedIn()) {
+    Auth.isLoggedInAsync(function () {
+
       user_query = '&user_id=' + Auth.getCurrentUser()._id;
-    };
+      
+      var ioSocket = io('', {
+        // Send auth token on connection, you will need to DI the Auth service above
+        'query': 'token=' + Auth.getToken() + user_query,
+        path: '/socket.io-client'
+      });
 
-    var ioSocket = io('', {
-      // Send auth token on connection, you will need to DI the Auth service above
-      'query': 'token=' + Auth.getToken() + user_query,
-      path: '/socket.io-client'
-    });
-
-    var socket = socketFactory({
-      ioSocket: ioSocket
-    });
+      socket = socketFactory({
+        ioSocket: ioSocket
+      });
+    })
 
     return {
       socket: socket,
