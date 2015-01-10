@@ -164,6 +164,10 @@ module.exports = function (socketio) {
       
     });
 
+    socket.on('pi:ble', function (data) {
+      socket.emit("pi:ble", data);
+    });
+
     // Call onDisconnect.
     socket.on('disconnect', function () {
       onDisconnect(socket);

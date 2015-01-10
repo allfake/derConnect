@@ -163,8 +163,31 @@
       </modal-dialog>
     </div> 
   </div>
-</div>
 
+  <div class="panel panel-default" ng-show="bles.length > 0">
+    <!-- Default panel contents -->
+    <div class="panel-heading">Ble List</div>
+    <div class="panel-body">
+
+      <!-- Table -->
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Address</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="ble in bles">
+            <td>{{ ble.name }}</td>
+            <td>{{ ble.serial_number }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
 
   <modal-dialog show='dialogAddPi' dialog-title='New raspbery pi'>
     <form name="piForm">

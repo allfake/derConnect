@@ -41,6 +41,30 @@ angular.module('derConnectApp')
         socket.emit('pi:action', pi);
       },
 
+      piBle: function(array, cb) {
+
+        cb = cb || angular.noop;
+
+        socket.on('pi:ble', function(item) {
+
+          var name = item.split(',')[0];
+          var serial_number = item.split(',')[1];
+          var bleData = {};
+          if (name && serial_number) {
+
+            bleData.name = name;
+            bleData.serial_number = serial_number;
+            
+            array = _.uniq(array.push(bleData));
+
+            cb(array);
+
+          };
+
+        })
+
+      },
+
       piOnline: function (array) {
 
         socket.on('pi:online', function (data) {

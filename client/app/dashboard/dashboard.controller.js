@@ -3,6 +3,7 @@
 angular.module('derConnectApp')
   .controller('DashboardCtrl', function ($scope, $http, socket, Auth, $modal) {
     $scope.pis = [];
+    $scope.bles = [];
     $scope.pi = {};
     $scope.pi.newSerialNumber = "";
 
@@ -11,6 +12,7 @@ angular.module('derConnectApp')
       
       socket.piOnline($scope.pis);
       socket.piOffline($scope.pis);
+      socket.piBle($scope.bles);
 
       for (var i = 0; i < $scope.pis.length; i++) {
         var pi = $scope.pis[i];
