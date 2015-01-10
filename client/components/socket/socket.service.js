@@ -34,35 +34,22 @@ angular.module('derConnectApp')
       },
 
       playSound: function(pi) {
-        socket.emit('pi:action', pi);
+        socket.emit('pi:action', 'playsound');
       },
 
       piAction: function(pi, action) {
-        socket.emit('pi:action', pi);
+        socket.emit('pi:action', action);
       },
 
-      piBle: function(array, cb) {
+      piBleReScan: function () {
 
-        cb = cb || angular.noop;
+        var action = 
+        {
+          type: 'bleReScan',
+          data: 1
+        }
 
-        socket.on('pi:ble', function(item) {
-
-          var name = item.split(',')[0];
-          var serial_number = item.split(',')[1];
-          var bleData = {};
-          if (name && serial_number) {
-
-            bleData.name = name;
-            bleData.serial_number = serial_number;
-            
-            array = _.uniq(array.push(bleData));
-
-            cb(array);
-
-          };
-
-        })
-
+        socket.emit('pi:action', action);
       },
 
       piOnline: function (array) {
@@ -93,17 +80,26 @@ angular.module('derConnectApp')
 
       piReceive: function(thing, serial_number, pi, cb) {
         cb = cb || angular.noop;
+
         socket.on('pi:receive:' + thing + ":" + serial_number, function (item) {
 
-          angular.forEach(pi.receive, function (value, key) {
-            if (value.type == thing) {
 
-              pi.receive[key].data = item;
-              pi.receive[key].last_update = new Date();
+          if (thing == 'bleList') {
+            item.name = item.name || "undefined";
+            item.serial_number = item.uuid;
+            pi.bles.push(item)
+          } else {
 
-              cb(thing, item, pi);
-            }
-          });
+            angular.forEach(pi.receive, function (value, key) {
+              if (value.type == thing) {
+
+                pi.receive[key].data = item;
+                pi.receive[key].last_update = new Date();
+
+                cb(thing, item, pi);
+              }
+            });
+          }
 
         });
 

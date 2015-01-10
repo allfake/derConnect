@@ -8,6 +8,7 @@ var ActionSchema = new Schema({
   name: String,
   data: String,
   type: String,
+  serial_number: String,
   display_name: String
 })
 
@@ -15,6 +16,7 @@ var ScheduleSchema = new Schema({
   name: String,
   data: String,
   type: String,
+  serial_number: String,
   fire: Date,
   interval: Number,
   interval_type: String,
@@ -25,6 +27,7 @@ var ReceiveSchema = new Schema({
   name: String,
   data: String,
   type: String,
+  serial_number: String,
   display_name: String,
   last_update: Date
 })

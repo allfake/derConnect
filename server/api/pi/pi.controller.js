@@ -41,7 +41,7 @@ exports.update = function(req, res) {
     pi.receive = req.body.receive;
     pi.action = req.body.action;
 
-    console.log(updated);
+    // console.log(updated);
     updated.save(function (err) {
       if (err) {console.log(err); return handleError(res, err); }
       return res.json(200, pi);

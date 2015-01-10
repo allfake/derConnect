@@ -10,6 +10,7 @@ var mongoose = require('mongoose');
 var Pi = require('../api/pi/pi.model');
 
 var piSocket = [];
+var piBleScan = [];
 var userSocket = [];
 // When the user disconnects.. perform this
 function onDisconnect(socket) {
@@ -82,6 +83,17 @@ function onConnect(socket) {
     console.info('pi online: ' + _.keys(piSocket).length);
   } 
 
+  // if (socket["handshake"] && socket["handshake"]["query"] 
+  //   && typeof socket["handshake"]["query"]["ble_scan"] != 'undefined'
+  //   && socket["handshake"]["query"]["ble_scan"]) {
+
+  //   var serialNumber = socket["handshake"]["query"]["ble_scan"];
+
+  //   piBleScan.push(socket);
+
+  //   console.info('pi ble scan: ' + _.keys(piBleScan).length);
+  // } 
+
   if (socket["handshake"] && socket["handshake"]["query"] 
     && typeof socket["handshake"]["query"]["user_id"] != "undefined" 
     && socket["handshake"]["query"]["user_id"]) {
@@ -136,17 +148,37 @@ module.exports = function (socketio) {
 
     socket.on('pi:action', function (data) {
 
-      // console.info(data);
-      if (typeof piSocket[data.serial_number] != 'undefined') {
-        piSocket[data.serial_number].emit("pi:action", "play sound");
-      }
+      var userId = socket["handshake"]["query"]["user_id"];
+      
+      Pi.find({user_id: userId}, function (err, pis) {
+        if (err) return console.info('err : ' + err);
+        if (!pis) return console.info('not found pis');
+
+        _.each(pis, function(pi) {
+
+          if (piSocket[pi.serial_number]) {
+            piSocket[pi.serial_number].emit("pi:action:" + data.type + ":" + pi.serial_number, data);
+          }
+
+        });
+      });
 
     });
     
     socket.on('pi:receive', function (item) {
 
-      var thing = item.split(',')[0];
-      var data = item.split(',')[1];
+      var thing;
+      var data;
+
+      if (typeof item == 'object') {
+        thing = item.type;
+        data = item.data; 
+
+      } else if (typeof item == 'string') {
+        thing = item.split(',')[0];
+        data = item.substring(item.search(',') + 1, item.length);
+      }
+
       var serialNumber = socket["handshake"]["query"]["serial_number"];
 
       Pi.find({serial_number: serialNumber}, function (err, pis) {
@@ -160,12 +192,7 @@ module.exports = function (socketio) {
 
         });
       });
-
       
-    });
-
-    socket.on('pi:ble', function (data) {
-      socket.emit("pi:ble", data);
     });
 
     // Call onDisconnect.

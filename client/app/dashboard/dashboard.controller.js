@@ -3,22 +3,30 @@
 angular.module('derConnectApp')
   .controller('DashboardCtrl', function ($scope, $http, socket, Auth, $modal) {
     $scope.pis = [];
-    $scope.bles = [];
     $scope.pi = {};
     $scope.pi.newSerialNumber = "";
 
     $http.get('/api/pis').success(function(pis) {
+
+      $scope.rescan = function () {
+        $scope.bles = [];
+        socket.piBleReScan();
+      }
+
       $scope.pis = pis;
       
       socket.piOnline($scope.pis);
       socket.piOffline($scope.pis);
-      socket.piBle($scope.bles);
+
 
       for (var i = 0; i < $scope.pis.length; i++) {
         var pi = $scope.pis[i];
 
+        pi.bles = [];
+        socket.piReceive('bleList', pi.serial_number, pi);
+
         angular.forEach(pi.receive, function (value) {
-          socket.piReceive(value.type, pi.serial_number, pi)
+          socket.piReceive(value.type, pi.serial_number, pi);
         });
 
       }
@@ -54,6 +62,21 @@ angular.module('derConnectApp')
       $http.put('/api/pis/' + pi._id, pi).success(function (data) {
 
       });
+    }
+
+    $scope.addAction = function(pi, action) {
+      if (pi.action.length == 0) {
+        pi.action = []; 
+      }
+      pi.action.push(action);
+      
+      $http.put('/api/pis/' + pi._id, pi).success(function (data) {
+
+      });
+    }
+
+    $scope.takeAction = function (pi, action) {
+      socket.piAction(pi, action);
     }
 
     $scope.addSchedule = function(pi, schedule) {
