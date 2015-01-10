@@ -8,8 +8,8 @@ angular.module('derConnectApp')
 
     $http.get('/api/pis').success(function(pis) {
 
-      $scope.rescan = function () {
-        $scope.bles = [];
+      $scope.rescan = function (pi) {
+        pi.bles = [];
         socket.piBleReScan();
       }
 
@@ -96,6 +96,19 @@ angular.module('derConnectApp')
       }
       pi.receive.push(receive);
       
+      $http.put('/api/pis/' + pi._id, pi).success(function (data) {
+
+      });
+    }
+
+    $scope.removeAction = function(pi, action) {
+      if (pi.action.length == 0) {
+        pi.action = []; 
+      }
+      pi.action.push(action);
+      
+      pi.action = _.remove(pi.action, function(s) { return s != action; });
+
       $http.put('/api/pis/' + pi._id, pi).success(function (data) {
 
       });

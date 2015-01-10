@@ -157,6 +157,7 @@ module.exports = function (socketio) {
         _.each(pis, function(pi) {
 
           if (piSocket[pi.serial_number]) {
+            console.log("pi:action:" + data.type + ":" + pi.serial_number)
             piSocket[pi.serial_number].emit("pi:action:" + data.type + ":" + pi.serial_number, data);
           }
 
