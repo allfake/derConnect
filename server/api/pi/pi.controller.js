@@ -11,6 +11,16 @@ exports.index = function(req, res) {
   });
 };
 
+// Get my pi
+exports.me = function(req, res) {
+  var userId = req.user._id;
+  Pi.find({user_id: userId}, function (err, pis) {
+    if (err)  { return handleError(res, err); }
+    if (!pis) { return res.send(404); }
+    return res.json(200, pis);
+  });
+};
+
 // Get a single pi
 exports.show = function(req, res) {
   Pi.findById(req.params.id, function (err, pi) {

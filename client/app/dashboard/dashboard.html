@@ -144,16 +144,96 @@
           <hr/>
         </div>
 
+        <h2>Schedule list</h2>
+        <hr/>
+        <div ng-init="schedule.edit = {}" ng-repeat="schedule in pi.schedule" ng-mouseover="showEditSchedule = true" ng-mouseleave="showEditSchedule = false">
+          <a class="pull-right" ng-show="showEditSchedule && !schedule.edit.type" ng-click="removeSchedule(pi, schedule)">Remove</a>
+          <div>
+            <label>Name</label>
+            <span ng-click="schedule.edit.tempName = schedule.type; schedule.edit.name = true">
+              <span ng-hide="schedule.edit.name">
+                {{schedule.name}}
+              </span>
+            </span>
+            <span ng-show="schedule.edit.name">
+              <span>
+                <input ng-model="schedule.name"/>
+              </span>
+              <button type="button" class="btn btn-default" ng-click="updatePi(pi); schedule.edit.name = false;">Save</button>
+              <button type="button" class="btn btn-default" ng-click="schedule.type = schedule.edit.tempName; schedule.edit.name = false">Cancel</button>
+            </span>
+            <a ng-show="showEditSchedule && !schedule.edit.name" ng-click="schedule.edit.tempName = schedule.type; schedule.edit.name = true">Edit</a>
+          </div>
+          <div>
+          <label>Type</label>
+            <span ng-click="schedule.edit.tempType = schedule.type; schedule.edit.type = true;">
+              <span ng-hide="schedule.edit.type">
+                {{schedule.type}}
+              </span>
+            </span>
+            <span ng-show="schedule.edit.type">
+              <input ng-model="schedule.type"/>
+              <button type="button" class="btn btn-default" ng-click="updatePi(pi); schedule.edit.type = false;">Save</button>
+              <button type="button" class="btn btn-default" ng-click="schedule.edit.type = false; schedule.type = schedule.edit.tempType">Cancel</button>
+            </span>
+            <a ng-show="showEditSchedule && !schedule.edit.type" ng-click="schedule.edit.tempType = schedule.type; schedule.edit.type = true">Edit</a>
+          </div>
+          <div>
+            <label>Data</label>
+            <span ng-click="schedule.edit.tempData = schedule.data; schedule.edit.data = true;">
+              <span ng-hide="schedule.edit.data">
+                {{schedule.data}}
+              </span>
+            </span>
+            <span ng-show="schedule.edit.data">
+              <input ng-model="schedule.data"/>
+              <button type="button" class="btn btn-default" ng-click="updatePi(pi); schedule.edit.data = false;">Save</button>
+              <button type="button" class="btn btn-default" ng-click="schedule.edit.data = false; schedule.data = schedule.edit.tempData">Cancel</button>
+            </span>
+            <a ng-show="showEditSchedule && !schedule.edit.data" ng-click="schedule.edit.tempData = schedule.data; schedule.edit.data = true">Edit</a>
+          </div>
+<!--           <div>
+            <label>Fire Date</label>
+            <span ng-click="schedule.edit.tempFire = schedule.fire; schedule.edit.fire = true;">
+              <span ng-hide="schedule.edit.fire">
+                {{schedule.fire}}
+              </span>
+            </span>
+            <span ng-show="schedule.edit.fire">
+              <input type="date" ng-model="schedule.fire"/>
+              <button type="button" class="btn btn-default" ng-click="updatePi(pi); schedule.edit.fire = false;">Save</button>
+              <button type="button" class="btn btn-default" ng-click="schedule.edit.fire = false; schedule.fire = schedule.edit.tempFire">Cancel</button>
+            </span>
+            <a ng-show="showEditSchedule && !schedule.edit.fire" ng-click="schedule.edit.tempFire = schedule.fire; schedule.edit.fire = true">Edit</a>
+          </div> -->
+          <div>
+            <label>Interval every</label>
+            <span ng-click="schedule.edit.tempInterval = schedule.interval; schedule.edit.interval = true;">
+              <span ng-hide="schedule.edit.interval">
+                {{schedule.interval}}
+              </span>
+            </span>
+            <span ng-show="schedule.edit.interval">
+              <input type="number" min="1" max="60" ng-model="schedule.interval"/>
+              <button type="button" class="btn btn-default" ng-click="updatePi(pi); schedule.edit.interval = false;">Save</button>
+              <button type="button" class="btn btn-default" ng-click="schedule.edit.interval = false; schedule.interval = schedule.edit.tempInterval">Cancel</button>
+            </span>
+            <a ng-show="showEditSchedule && !schedule.edit.interval" ng-click="schedule.edit.tempInterval = schedule.interval; schedule.edit.interval = true">Edit</a>
+          </div>
+          <hr/>
+        </div>
+
         <div class="panel panel-default">
           <!-- Default panel contents -->
           <div class="panel-heading">
             Ble List
             <button type="butoon" class="btn btn-default btn-xs pull-right" ng-click="rescan(pi)">Rescan Ble</button>
+            <button type="butoon" class="btn btn-default btn-xs pull-right" ng-click="show = !show" ng-init="show = true">Toggle show</button>
           </div>
           <div class="panel-body">
             <!-- Table -->
-            Total found : {{bles.length || 0}}
-            <table class="table" ng-show="pi.bles.length>0">
+            Total found : {{ pi.bles.length || 0 }}
+            <table class="table" ng-show="pi.bles.length > 0 && show">
               <thead>
                 <tr>
                   <th>Name</th>
@@ -190,17 +270,6 @@
           </div>
         </div>
         <div>
-          <a ng-click="scheduleEditting = true">
-            Add Schedule
-          </a>
-          <span ng-show="scheduleEditting" ng-click="scheduleEditting = false">Cancel</span>
-          <div ng-show="scheduleEditting">
-            <label>Schedule</label>
-            <input type="text"/> 
-            <button type="button" class="btn btn-default" ng-click="scheduleEditting = false;">Save</button>
-          </div>
-        </div>
-        <div>
           <a ng-click="receiveEditting = true">
             Add Receive
           </a>
@@ -213,6 +282,25 @@
             <button type="button" class="btn btn-default" ng-click="addReceive(pi, newReceive); receiveEditting = false;">Save</button>
           </div>
         </div>
+        <div>
+          <a ng-click="scheduleEditting = true">
+            Add Schedule
+          </a>
+          <span ng-show="scheduleEditting" ng-click="scheduleEditting = false">Cancel</span>
+          <div ng-show="scheduleEditting">
+            <label>Name</label>
+            <input type="text" ng-model="newSchedule.name" require/> 
+            <label>Type</label>
+            <input type="text" ng-model="newSchedule.type" require/> 
+            <label>Data</label>
+            <input type="text" ng-model="newSchedule.data" require/>
+            <!-- <label>Date</label>
+            <input type="date" ng-model="newSchedule.fire"/> -->
+            <label>Interval every (minute)</label>
+            <input type="number" min="1" max="60" ng-model="newSchedule.interval" require/>
+            <button type="button" class="btn btn-default" ng-click="addSchedule(pi, newSchedule); scheduleEditting = false;">Save</button>
+          </div>
+        </div>
       </div>
 
 
@@ -220,9 +308,9 @@
         <tabset justified="true">
           <tab heading="Schedule list">
             <div ng-repeat="schedule in pi.schedule">
-              <div>{{schdule.name}}</div>
-              <div>{{schdule.type}}</div>
-              <div>{{schdule.fire}}</div>
+              <div>{{schedule.name}}</div>
+              <div>{{schedule.type}}</div>
+              <div>{{schedule.fire}}</div>
               <button type="button" class="btn btn-info pull-right " ng-click="deleteSchedule(pi, schedule)">Delete</button>
             </div>
           </tab>
@@ -230,19 +318,19 @@
             <div class="row"> 
               <div class="col-xs-6">
                   Name
-                  <input type="text" ng-model="schdule.name" class="form-control" placeholder="Schedule name"  ng-init="schdule.name = 'New schdule'"/>
+                  <input type="text" ng-model="schedule.name" class="form-control" placeholder="Schedule name"  ng-init="schedule.name = 'New schedule'"/>
               </div>
             </div>
             <div class="row"> 
               <div class="col-xs-6">
                   Action
-                <select class="form-control" ng-model="schdule.type" ng-options="opt for opt in options.type"></select>
+                <select class="form-control" ng-model="schedule.type" ng-options="opt for opt in options.type"></select>
               </div>
             </div>
             <br>
             <span class="">Set time</span>
-            <timepicker ng-model="schdule.fire" ng-change="changed()" hour-step="1" minute-step="1" show-meridian="ismeridian"></timepicker>
-            <button type="button" class="btn btn-default" ng-click="addSchedule(pi, schdule)">Add</button>
+            <timepicker ng-model="schedule.fire" ng-change="changed()" hour-step="1" minute-step="1" show-meridian="ismeridian"></timepicker>
+            <button type="button" class="btn btn-default" ng-click="addSchedule(pi, schedule)">Add</button>
           </tab>
         </tabset>
       </modal-dialog>

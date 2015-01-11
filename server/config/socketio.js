@@ -10,7 +10,6 @@ var mongoose = require('mongoose');
 var Pi = require('../api/pi/pi.model');
 
 var piSocket = [];
-var piBleScan = [];
 var userSocket = [];
 // When the user disconnects.. perform this
 function onDisconnect(socket) {
@@ -81,18 +80,7 @@ function onConnect(socket) {
     });
 
     console.info('pi online: ' + _.keys(piSocket).length);
-  } 
-
-  // if (socket["handshake"] && socket["handshake"]["query"] 
-  //   && typeof socket["handshake"]["query"]["ble_scan"] != 'undefined'
-  //   && socket["handshake"]["query"]["ble_scan"]) {
-
-  //   var serialNumber = socket["handshake"]["query"]["ble_scan"];
-
-  //   piBleScan.push(socket);
-
-  //   console.info('pi ble scan: ' + _.keys(piBleScan).length);
-  // } 
+  }
 
   if (socket["handshake"] && socket["handshake"]["query"] 
     && typeof socket["handshake"]["query"]["user_id"] != "undefined" 

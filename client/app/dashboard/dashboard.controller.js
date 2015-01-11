@@ -6,7 +6,7 @@ angular.module('derConnectApp')
     $scope.pi = {};
     $scope.pi.newSerialNumber = "";
 
-    $http.get('/api/pis').success(function(pis) {
+    $http.get('/api/pis/me/').success(function(pis) {
 
       $scope.rescan = function (pi) {
         pi.bles = [];
@@ -108,6 +108,7 @@ angular.module('derConnectApp')
       pi.action.push(action);
       
       pi.action = _.remove(pi.action, function(s) { return s != action; });
+      pi.action = _.without(pi.action, null);
 
       $http.put('/api/pis/' + pi._id, pi).success(function (data) {
 
@@ -121,21 +122,23 @@ angular.module('derConnectApp')
       pi.receive.push(receive);
       
       pi.receive = _.remove(pi.receive, function(s) { return s != receive; });
+      pi.receive = _.without(pi.receive, null);
 
       $http.put('/api/pis/' + pi._id, pi).success(function (data) {
 
       });
     }
 
-    $scope.deleteSchedule = function(pi, schedule) {
+    $scope.removeSchedule = function(pi, schedule) {
       if (pi.schedule.length == 0) {
         pi.schedule = []; 
       }
 
       pi.schedule = _.remove(pi.schedule, function(s) { return s != schedule; });
-
+      pi.schedule = _.without(pi.schedule, null);
+      
       $http.put('/api/pis/' + pi._id, pi).success(function (data) {
-        schedule = {}
+        
       });
     }
 

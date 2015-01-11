@@ -40,6 +40,7 @@ var PiSchema = new Schema({
   schedule: [ScheduleSchema],
   receive: [ReceiveSchema],
   info: String,
+  scheduleSync: Number,
   active: Boolean
 });
 
