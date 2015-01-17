@@ -50,11 +50,29 @@ angular.module('derConnectApp')
       type: ['Play song', 'Open light', 'Close light'],
     };
 
+    $scope.addDevice = function(pi, device, toggle) {
+      
+      if (!$scope.validateDevice(device)) {
+        return;
+      }
+
+      if (pi.devices.length == 0) {
+        pi.devices = []; 
+      }
+
+      pi.devices.push(device);
+
+      $http.put('/api/pis/' + pi._id, pi).success(function (data) {
+        // $scope[toggle] = !$scope[toggle];
+      });
+    };
+
     $scope.addPi = function() {
       if($scope.pi.newSerialNumber === '') {
         return;
       }
-      $http.post('/api/pis', { user_id: Auth.getCurrentUser()._id , serial_number: $scope.pi.newSerialNumber });
+      $http.post('/api/pis', { user_id: Auth.getCurrentUser()._id , serial_number: $scope.pi.newSerialNumber }).success(function(data) {
+      });
       $scope.pi.newSerialNumber = '';
     };
 
@@ -73,14 +91,19 @@ angular.module('derConnectApp')
       });
     }
 
-    $scope.addAction = function(pi, action) {
-      if (pi.action.length == 0) {
-        pi.action = []; 
+    $scope.addAction = function(pi, device, action, toggle) {
+
+      if (!$scope.validateAction(action)) {
+        return;
       }
-      pi.action.push(action);
+
+      if (device.action.length == 0) {
+        device.action = []; 
+      }
+      device.action.push(action);
       
       $http.put('/api/pis/' + pi._id, pi).success(function (data) {
-
+        // $scope[toggle] = !$scope[toggle];
       });
     }
 
@@ -115,14 +138,24 @@ angular.module('derConnectApp')
       });
     }
 
-    $scope.removeAction = function(pi, action) {
-      if (pi.action.length == 0) {
-        pi.action = []; 
+
+    $scope.removeDevice = function(pi, device) {
+      if (pi.devices.length == 0) {
+        pi.devices = []; 
       }
-      pi.action.push(action);
       
-      pi.action = _.remove(pi.action, function(s) { return s != action; });
-      pi.action = _.without(pi.action, null);
+      pi.devices = _.remove(pi.devices, function(s) { return s != device; });
+      pi.devices = _.without(pi.devices, null);
+
+      $http.put('/api/pis/' + pi._id, pi).success(function (data) {
+
+      });
+    }
+
+    $scope.removeAction = function(pi, device, action) {
+      
+      device.action = _.remove(device.action, function(s) { return s != action; });
+      device.action = _.without(device.action, null);
 
       $http.put('/api/pis/' + pi._id, pi).success(function (data) {
 
@@ -162,9 +195,21 @@ angular.module('derConnectApp')
       }
     }
 
-    $scope.validateAction = function (schedule) {
+
+    $scope.validateDevice = function (device) {
               
-      if(!!!schedule || !schedule.interval || !schedule.data || !schedule.type || !schedule.name) {
+      if(!!!device || !device.name || !device.uuid || !device.type) {
+        toastr["error"]("Please fill all field")
+        return false;
+      } else {
+        return true;
+      }
+
+    }
+
+    $scope.validateAction = function (action) {
+              
+      if(!!!action || !action.data || !action.name) {
         toastr["error"]("Please fill all field")
         return false;
       } else {

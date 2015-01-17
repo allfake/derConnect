@@ -32,13 +32,21 @@ var ReceiveSchema = new Schema({
   last_update: Date
 })
 
+var DeviceSchema = new Schema({
+    name: String,
+    type: String,
+    active: Boolean,
+    uuid: String,
+    action: [ActionSchema],
+    schedule: [ScheduleSchema],
+    receive: [ReceiveSchema],
+})
+
 var PiSchema = new Schema({
   name: String,
   serial_number: String,
   user_id: String,
-  action: [ActionSchema],
-  schedule: [ScheduleSchema],
-  receive: [ReceiveSchema],
+  devices: [DeviceSchema],
   info: String,
   scheduleSync: Number,
   active: Boolean
@@ -60,7 +68,8 @@ PiSchema
     });
 }, 'The specified serial number is already in use.');
 
-module.exports = mongoose.model('action', ActionSchema);
-module.exports = mongoose.model('receive', ReceiveSchema);
-module.exports = mongoose.model('schedule', ScheduleSchema);
+module.exports = mongoose.model('Action', ActionSchema);
+module.exports = mongoose.model('Receive', ReceiveSchema);
+module.exports = mongoose.model('Schedule', ScheduleSchema);
+module.exports = mongoose.model('Device', DeviceSchema);
 module.exports = mongoose.model('Pi', PiSchema);

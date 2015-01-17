@@ -14,6 +14,170 @@
 
 
   <div ng-repeat="pi in pis | orderBy : 'serial_number' : false" >
+    <h2>
+      Pi list [ serialnumber <code>{{ pi.serial_number }}</code> ]
+      <button class="btn btn-danger pull-right btn-xs" ng-click="deletePi(pi)">Delete pi</button>
+
+    </h2>
+    <h3>
+      Device list
+      <button class="btn btn-default btn-xs" ng-show="!addNewDevice" ng-click="addNewDevice = true;">+</button>
+      <button class="btn btn-default btn-xs" ng-show="addNewDevice" ng-click="addDevice(pi, device, 'addNewDevice')">Add</button>
+      <button class="btn btn-danger btn-xs" ng-show="addNewDevice" ng-click="device = {}; addNewDevice = false">Cancel</button>
+    </h3>
+
+    <form collapse="!addNewDevice" class="form-horizontal">
+      <div>
+        <div class="form-group">
+          <label class="col-md-1 control-label">
+            Name
+          </label>
+          <div class="col-md-4">
+            <input class="form-control" type="text" ng-model="device.name"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-md-1 control-label">
+            UUID
+          </label>
+          <div class="col-md-4">
+            <input class="form-control" type="text" ng-model="device.uuid"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-md-1 control-label">
+            Type
+          </label>
+          <div class="col-md-4">
+              <select class="form-control" ng-options="deviceType.name as deviceType.name for deviceType in deviceTypes" ng-model="device.type"></select>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <div class="row" ng-repeat="device in pi.devices">
+
+      <blockquote class="col-md-12">
+        <p class="">
+          Device name <code>{{ device.name }}</code> Type <code>{{ device.type }}</code> UUID <code>{{ device.uuid }}</code>
+          <button class="btn btn-danger pull-right btn-xs" ng-click="removeDevice(pi, device)">Delete device</button>
+        </p>
+
+      </blockquote>
+
+      <div>
+        <div class="col-md-4">
+          
+          <h3>
+            Action
+            <button class="btn btn-default btn-xs" ng-show="!addNewAction" ng-click="addNewAction = true;"> + </button>
+            <button class="btn btn-default btn-xs" ng-show="addNewAction" ng-click="addAction(pi, device, action);">Add</button>
+            <button class="btn btn-danger btn-xs" ng-show="addNewAction" ng-click="addNewAction = false">Cancel</button>
+          </h3>
+
+          <form collapse="!addNewAction" class="form-horizontal">
+            <div>
+              <div class="form-group">
+                <label class="col-md-2 control-label">
+                  Name
+                </label>
+                <div class="col-md-10">
+                  <input class="form-control" type="text" ng-model="action.name"/>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-md-2 control-label">
+                  Data
+                </label>
+                <div class="col-md-10">
+                  <input class="form-control" type="text" ng-model="action.data"/>
+                </div>
+              </div>
+            </div>
+          </form>
+
+          <div ng-repeat="action in device.action" 
+               ng-init="isEditAction = false;">
+            <div class="list-group" ng-show="!isEditAction" 
+                 ng-mouseover="showEditAction = true" ng-mouseleave="showEditAction = false"
+                 ng-dblclick="isEditAction = true;
+                        tempAction.name = action.name;
+                        tempAction.data = action.data">
+              <a href="#" class="list-group-item">
+                <p class="list-group-item-text">
+                  Name
+                  <button ng-show="showEditAction" class="btn btn-danger btn-xs pull-right"
+                          ng-click="removeAction(pi, device, action)"
+                    >
+                    Delete
+                  </button>
+                  <button ng-show="showEditAction" class="btn btn-default btn-xs pull-right"
+                          ng-click="isEditAction = true;
+                                    tempAction.name = action.name;
+                                    tempAction.data = action.data">
+                    Edit
+                  </button>
+                </p>
+                <h4 class="list-group-item-heading">{{ action.name }}</h4>
+              </a>
+              <a href="#" class="list-group-item">
+                <p class="list-group-item-text">
+                  Data                   
+                  <button class="btn btn-default pull-right" ng-click="takeAction(pi, action)">Do</button>
+                </p>
+                <h4 class="list-group-item-heading">
+                  {{ action.data }}
+                </h4>
+              </a>
+            </div>
+            
+            <div class="list-group" ng-show="isEditAction">
+              <a href="#" class="list-group-item">
+                <p class="list-group-item-text">Name</p>
+                <input class="form-control" type="text" ng-model="action.name"/>
+              </a>
+              <a href="#" class="list-group-item">
+                <p class="list-group-item-text">
+                  Data                   
+                </p>
+                <h4 class="list-group-item-heading">
+                  <input class="form-control" type="text" ng-model="action.data"/>
+                </h4>
+              </a>
+              <a href="#" class="list-group-item">
+                <button class="btn btn-default" ng-click="device.action[$index] = tempAction; isEditAction = false">Cancel</button>
+                <button class="btn btn-success" ng-click="updatePi(pi)">Save</button>
+                
+              </a>
+            </div>
+
+          </div>
+        </div>
+        <div class="col-md-4">
+
+          <h3>
+            Receive
+            <button class="btn btn-default" ng-click="addNewReceive = true;">+</button>
+          </h3>
+          <div ng-repeat="receive in device.receive">
+            
+          </div>          
+        </div>
+        <div class="col-md-4">
+          
+          <h3>
+            Schedule
+            <button class="btn btn-default" ng-click="addNewSchedule = true;">+</button>
+          </h3>
+
+          <div ng-repeat="schedule in device.schedule">
+            
+          </div>          
+        </div>
+      </div>
+
+    </div>
+
     <div class="panel panel-default" ng-class="pi.status ? 'panel-success' : 'panel-danger'">
       <div class="panel-heading">
         <div class="center">
