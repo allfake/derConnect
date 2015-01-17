@@ -25,11 +25,8 @@
         </div>
       </div>
       <div class="panel-body">
-        <button type="button" class="btn btn-default" ng-click="playSound(pi)"> Play sound </button>
-        <button type="button" class="btn btn-info pull-right " ng-click="dialogAction = !dialogAction"> Action </button</h2>          <button type="button" class="btn btn-info pull-right " ng-click="dialogSchedule = !dialogSchedule"> Schedule </button>
         <div ng-show="pi.localIp">Local ip {{pi.localIp}}</div>
         <hr/>
-
         <h2>Action list</h2>
         <hr/>
         <div ng-init="action.edit = {}" ng-repeat="action in pi.action" ng-mouseover="showEditAction = true" ng-mouseleave="showEditAction = false">
@@ -146,7 +143,7 @@
 
         <h2>Schedule list</h2>
         <hr/>
-        <div ng-init="schedule.edit = {}" ng-repeat="schedule in pi.schedule" ng-mouseover="showEditSchedule = true" ng-mouseleave="showEditSchedule = false">
+        <div ng-init="schedule.edit = {}" ng-repeat="schedule in pi.schedule track by $index" ng-mouseover="showEditSchedule = true" ng-mouseleave="showEditSchedule = false">
           <a class="pull-right" ng-show="showEditSchedule && !schedule.edit.type" ng-click="removeSchedule(pi, schedule)">Remove</a>
           <div>
             <label>Name</label>
@@ -261,7 +258,9 @@
             <label>Name</label>
             <input type="text" ng-model="newAction.name"/> 
             <label>Type</label>
-            <input type="text" ng-model="newAction.type"/> 
+            <!-- <input type="text" ng-model="newAction.type"/>  -->
+            <select ng-options="deviceType.name as deviceType.name for deviceType in deviceTypes | filter:{ type: 'action' } " ng-model="newAction.type"></select>
+
             <label>Data</label>
             <input type="text" ng-model="newAction.data"/> 
             <label>Serial number</label>
@@ -278,10 +277,13 @@
             <label>Name</label>
             <input type="text" ng-model="newReceive.name"/>
             <label>Type</label>
-            <input type="text" ng-model="newReceive.type"/> 
+            <!-- <input type="text" ng-model="newReceive.type"/>  -->
+            <select ng-options="deviceType.name as deviceType.name for deviceType in deviceTypes | filter:{ type: 'receive' } " ng-model="newReceive.type"></select>
+
             <button type="button" class="btn btn-default" ng-click="addReceive(pi, newReceive); receiveEditting = false;">Save</button>
           </div>
         </div>
+        <form>
         <div>
           <a ng-click="scheduleEditting = true">
             Add Schedule
@@ -291,69 +293,23 @@
             <label>Name</label>
             <input type="text" ng-model="newSchedule.name" require/> 
             <label>Type</label>
-            <input type="text" ng-model="newSchedule.type" require/> 
+
+            <select ng-options="deviceType.name as deviceType.name for deviceType in deviceTypes | filter:{ type: 'schedule' } " ng-model="newSchedule.type"></select>
+
             <label>Data</label>
             <input type="text" ng-model="newSchedule.data" require/>
             <!-- <label>Date</label>
             <input type="date" ng-model="newSchedule.fire"/> -->
             <label>Interval every (minute)</label>
             <input type="number" min="1" max="60" ng-model="newSchedule.interval" require/>
-            <button type="button" class="btn btn-default" ng-click="addSchedule(pi, newSchedule); scheduleEditting = false;">Save</button>
+            <button type="button" class="btn btn-default" ng-click="addSchedule(pi, newSchedule)">Save</button>
           </div>
         </div>
+        </form>
       </div>
-
-
-      <modal-dialog show='dialogSchedule' dialog-title='Schedule' class="action">
-        <tabset justified="true">
-          <tab heading="Schedule list">
-            <div ng-repeat="schedule in pi.schedule">
-              <div>{{schedule.name}}</div>
-              <div>{{schedule.type}}</div>
-              <div>{{schedule.fire}}</div>
-              <button type="button" class="btn btn-info pull-right " ng-click="deleteSchedule(pi, schedule)">Delete</button>
-            </div>
-          </tab>
-          <tab heading="New schedule">
-            <div class="row"> 
-              <div class="col-xs-6">
-                  Name
-                  <input type="text" ng-model="schedule.name" class="form-control" placeholder="Schedule name"  ng-init="schedule.name = 'New schedule'"/>
-              </div>
-            </div>
-            <div class="row"> 
-              <div class="col-xs-6">
-                  Action
-                <select class="form-control" ng-model="schedule.type" ng-options="opt for opt in options.type"></select>
-              </div>
-            </div>
-            <br>
-            <span class="">Set time</span>
-            <timepicker ng-model="schedule.fire" ng-change="changed()" hour-step="1" minute-step="1" show-meridian="ismeridian"></timepicker>
-            <button type="button" class="btn btn-default" ng-click="addSchedule(pi, schedule)">Add</button>
-          </tab>
-        </tabset>
-      </modal-dialog>
-
-      <modal-dialog show='dialogAction' dialog-title='Play' class="action">
-          <div class="list-group">
-            <a href="#" class="list-group-item col-md-offset-3 col-md-6" ng-click="playSound(pi)">
-              <h4 class="list-group-item-heading">Play sound</h4>
-            </a>
-            <a href="#" class="list-group-item col-md-offset-3 col-md-6">
-              <h4 class="list-group-item-heading">Take picture</h4>
-            </a>
-            <a href="#" class="list-group-item col-md-offset-3 col-md-6">
-              <h4 class="list-group-item-heading">Print </h4>
-              <input ng-trim="true" ng-maxlength="100" type="text" class="list-group-item-heading" />
-              <button type="button" class="btn btn-default" ng-click="addPi()">Print</button>
-            </a>
-          </div>
-      </modal-dialog>
     </div> 
   </div>
 </div>
-
   <modal-dialog show='dialogAddPi' dialog-title='New raspbery pi'>
     <form name="piForm">
       <div class="form-group">

@@ -107,6 +107,7 @@ function onConnect(socket) {
   } 
 
   // Insert sockets below
+  require('../api/deviceType/deviceType.socket').register(socket);
   require('../api/pi/pi.socket').register(socket);
   require('../api/thing/thing.socket').register(socket);
 }

@@ -1,0 +1,69 @@
+<div ng-include="'components/navbar/navbar.html'"></div>
+
+<div class="container">
+  <form class="form-horizontal">
+    <div class="form-group">
+      <label class="col-md-7 control-label">
+        <h2>New device type</h2>
+      </label>
+    </div>
+    <div class="form-group">
+      <label class="col-md-4 control-label">
+        Name
+      </label>
+      <div class="col-md-4">
+        <input class="form-control" type="text" ng-model="deviceType.name"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-md-4 control-label">
+        Type
+      </label>
+      <div class="col-md-4">
+        <select class="form-control" ng-options="type.title as type.title for type in typeList" ng-model="deviceType.type">
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-default col-md-offset-7" ng-click="addDeveiceType(deviceType)">Add</button>
+  </form>
+
+  <hr/>
+
+
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Type</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="device in deviceTypes | orderBy:'type'" ng-init="isEdit = false; device.edit.name = device.name; device.edit.type = device.type; device.edit._id = device._id">
+          <th scope="row">{{$index + 1}}</th>
+          <td ng-dblclick="isEdit = true">
+            <div ng-show="!isEdit">{{device.name}}</div>
+            <input ng-show="isEdit" class="form-control" type="text" ng-model="device.edit.name">
+          </td>
+          <td ng-dblclick="isEdit = true">
+            <div ng-show="!isEdit">{{device.type}}</div>
+            <div ng-show="isEdit">
+              
+              <select class="form-control" ng-options="type.title as type.title for type in typeList" ng-model="device.edit.type">
+              </select>
+
+            </div>
+          </td>
+          <td>
+            <button class="btn btn-default" ng-click="isEdit=true" ng-show="!isEdit">Edit</button>
+            <button class="btn btn-danger" ng-click="deleteDeveiceType(device)" ng-show="!isEdit">Delete</button>
+            <button class="btn btn-default" ng-click="updateDeveiceType(device.edit); isEdit=false" ng-show="isEdit">Save</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>

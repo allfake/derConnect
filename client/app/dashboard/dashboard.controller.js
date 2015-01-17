@@ -6,6 +6,15 @@ angular.module('derConnectApp')
     $scope.pi = {};
     $scope.pi.newSerialNumber = "";
 
+    $http.get('/api/deviceTypes/').success(function(deviceTypes) {
+
+      $scope.deviceTypes = deviceTypes;
+      
+      socket.syncUpdates('deviceType', $scope.deviceTypes, function(event) {
+        
+      });
+    });
+
     $http.get('/api/pis/me/').success(function(pis) {
 
       $scope.rescan = function (pi) {
@@ -32,7 +41,7 @@ angular.module('derConnectApp')
       }
 
 
-      socket.syncUpdates('pi', $scope.pis, function(event) {
+      socket.syncUpdatesPi('pi', $scope.pis, function(event) {
                
       });
     });
@@ -79,14 +88,19 @@ angular.module('derConnectApp')
       socket.piAction(pi, action);
     }
 
-    $scope.addSchedule = function(pi, schedule) {
+    $scope.addSchedule = function(pi, schedule, editting) {
+
+      if (!$scope.validateSchdule(schedule)) {
+        return;
+      } 
+
       if (pi.schedule.length == 0) {
         pi.schedule = []; 
       }
       pi.schedule.push(schedule);
 
       $http.put('/api/pis/' + pi._id, pi).success(function (data) {
-
+        $scope.scheduleEditting = false;
       });
     }
 
@@ -143,6 +157,41 @@ angular.module('derConnectApp')
     }
 
     $scope.updateSchedule = function(pi, schedule) {
+      if (!$scope.validateSchdule(schedule)) {
+        return;
+      }
+    }
+
+    $scope.validateAction = function (schedule) {
+              
+      if(!!!schedule || !schedule.interval || !schedule.data || !schedule.type || !schedule.name) {
+        toastr["error"]("Please fill all field")
+        return false;
+      } else {
+        return true;
+      }
+
+    }
+
+    $scope.validateReceive = function (schedule) {
+              
+      if(!!!schedule || !schedule.interval || !schedule.data || !schedule.type || !schedule.name) {
+        toastr["error"]("Please fill all field")
+        return false;
+      } else {
+        return true;
+      }
+
+    }
+
+    $scope.validateSchdule = function (schedule) {
+              
+      if(!!!schedule || !schedule.interval || !schedule.data || !schedule.type || !schedule.name) {
+        toastr["error"]("Please fill all field")
+        return false;
+      } else {
+        return true;
+      }
 
     }
 
