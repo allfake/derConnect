@@ -1,7 +1,7 @@
 <div ng-include="'components/navbar/navbar.html'"></div>
 
 <div class="container">
-
+  {{aaa}}
   <div class="alert alert-info" role="alert">
     <span> 
       Happy to see you.
@@ -159,7 +159,7 @@
           
           <h3>
             Receive
-            <button class="btn btn-default btn-xs" ng-show="!addNewReceive" ng-click="addNewReceive = true;"> + </button>
+            <!-- <button class="btn btn-default btn-xs" ng-show="!addNewReceive" ng-click="addNewReceive = true;"> + </button> -->
             <button class="btn btn-default btn-xs" ng-show="addNewReceive" ng-click="addReceive(pi, device, receive);">Add</button>
             <button class="btn btn-danger btn-xs" ng-show="addNewReceive" ng-click="addNewReceive = false">Cancel</button>
           </h3>
@@ -187,11 +187,11 @@
               <a href="#" class="list-group-item">
                 <p class="list-group-item-text">
                   Name
-                  <button ng-show="showEditAction" class="btn btn-danger btn-xs pull-right"
+                  <!-- <button ng-show="showEditAction" class="btn btn-danger btn-xs pull-right"
                           ng-click="removeReceive(pi, device, receive)"
                     >
                     Delete
-                  </button>
+                  </button> -->
                   <button ng-show="showEditAction" class="btn btn-default btn-xs pull-right"
                           ng-click="isEditReceive = true;
                                     tempReceive.name = receive.name;
@@ -206,7 +206,7 @@
                   Data                   
                 </p>
                 <h4 class="list-group-item-heading">
-                  {{ receive.data || 'waiting for data'}}
+                  {{ (receive.data | deviceReceiveData:device.type:deviceTypes) }}
                 </h4>
               </a>
             </div>

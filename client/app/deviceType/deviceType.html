@@ -1,11 +1,19 @@
 <div ng-include="'components/navbar/navbar.html'"></div>
 
 <div class="container">
-  <form class="form-horizontal">
+  <form class="form-horizontal" ng-init="deviceType.transform_function = 'function(json) { return json;}'">
     <div class="form-group">
       <label class="col-md-7 control-label">
         <h2>New device type</h2>
       </label>
+    </div>
+    <div class="form-group">
+      <label class="col-md-4 control-label">
+        Identifiter
+      </label>
+      <div class="col-md-4">
+        <input class="form-control" type="text" ng-model="deviceType.identifier"/>
+      </div>
     </div>
     <div class="form-group">
       <label class="col-md-4 control-label">
@@ -24,6 +32,18 @@
         </select>
       </div>
     </div>
+    <div class="form-group">
+      <label class="col-md-4 control-label">
+        Transform function (for receive)
+      </label>
+      <div class="col-md-4">
+        <textarea class="form-control" rows="8" ng-model="deviceType.transform_function">
+        </textarea>
+        </select>
+      </div>
+    </div>
+
+
     <button class="btn btn-default col-md-offset-7" ng-click="addDeveiceType(deviceType)">Add</button>
   </form>
 
@@ -35,14 +55,20 @@
       <thead>
         <tr>
           <th>#</th>
+          <th>Identifiter</th>
           <th>Name</th>
           <th>Type</th>
+          <th>Transform function</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="device in deviceTypes | orderBy:'type'" ng-init="isEdit = false; device.edit.name = device.name; device.edit.type = device.type; device.edit._id = device._id">
+        <tr ng-repeat="device in deviceTypes | orderBy:'type'" ng-init="isEdit = false; device.edit.name = device.name; device.edit.type = device.type; device.edit._id = device._id; device.edit.transform_function = device.transform_function; device.edit.identifier = device.identifier">
           <th scope="row">{{$index + 1}}</th>
+          <td ng-dblclick="isEdit = true">
+            <div ng-show="!isEdit">{{device.identifier}}</div>
+            <input ng-show="isEdit" class="form-control" type="text" ng-model="device.edit.identifier">
+          </td>
           <td ng-dblclick="isEdit = true">
             <div ng-show="!isEdit">{{device.name}}</div>
             <input ng-show="isEdit" class="form-control" type="text" ng-model="device.edit.name">
@@ -55,6 +81,10 @@
               </select>
 
             </div>
+          </td>
+          <td ng-dblclick="isEdit = true">
+            <div ng-show="!isEdit">{{device.transform_function}}</div>
+            <textarea rows="8" ng-show="isEdit" class="form-control" type="text" ng-model="device.edit.transform_function"></textarea>
           </td>
           <td>
             <button class="btn btn-default" ng-click="isEdit=true" ng-show="!isEdit">Edit</button>

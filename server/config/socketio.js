@@ -160,11 +160,12 @@ module.exports = function (socketio) {
 
       var thing;
       var data;
+      var uuid;
 
       if (typeof item == 'object') {
         thing = item.type;
         data = item.data; 
-
+        uuid = item.uuid;
       } else if (typeof item == 'string') {
         thing = item.split(',')[0];
         data = item.substring(item.search(',') + 1, item.length);
@@ -178,7 +179,7 @@ module.exports = function (socketio) {
 
         _.each(pis, function(pi) {
           if (userSocket[pi.user_id]) {
-            userSocket[pi.user_id].emit("pi:receive:" + thing + ":" + serialNumber, data);
+            userSocket[pi.user_id].emit("pi:receive:" + thing + ":" + serialNumber + ":" + uuid, data);
           }
 
         });

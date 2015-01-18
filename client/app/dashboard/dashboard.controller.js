@@ -13,43 +13,50 @@ angular.module('derConnectApp')
       socket.syncUpdates('deviceType', $scope.deviceTypes, function(event) {
         
       });
-    });
 
-    $http.get('/api/pis/me/').success(function(pis) {
+      $http.get('/api/pis/me/').success(function(pis) {
 
-      $scope.rescan = function (pi) {
-        pi.bles = [];
-        socket.piBleReScan();
-      }
+        $scope.rescan = function (pi) {
+          pi.bles = [];
+          socket.piBleReScan();
+        }
 
-      $scope.pis = pis;
-      
-      socket.piOnline($scope.pis);
-      socket.piOffline($scope.pis);
+        $scope.pis = pis;
+        
+        socket.piOnline($scope.pis);
+        socket.piOffline($scope.pis);
 
 
-      for (var i = 0; i < $scope.pis.length; i++) {
-        var pi = $scope.pis[i];
+        for (var i = 0; i < $scope.pis.length; i++) {
+          var pi = $scope.pis[i];
 
-        pi.bles = [];
-        socket.piReceive('bleList', pi.serial_number, pi);
+          pi.bles = [];
+          socket.piReceive('bleList', pi.serial_number, pi);
 
-        angular.forEach(pi.devices, function (d) {
-          angular.forEach(d.receive, function (value) {
-            socket.piReceive(d.type, pi.serial_number, pi);
+          angular.forEach(pi.devices, function (d) {
+            angular.forEach(d.receive, function (value) {
+              socket.piReceive(d.type, d.uuid, pi, deviceTypes);
+            });
           });
+        }
+
+
+        socket.syncUpdatesPi('pi', $scope.pis, function(event) {
+                 
         });
-      }
-
-
-      socket.syncUpdatesPi('pi', $scope.pis, function(event) {
-               
       });
     });
+    
+    $scope.transform_reveice = function(device, receive) {
 
-    $scope.options = {
-      type: ['Play song', 'Open light', 'Close light'],
-    };
+      angular.forEach($scope.deviceTypes, function(value, key) {
+        if (device.type == value.name) {
+
+        }
+      });
+
+      var transformFunction = '';
+    }
 
     $scope.addDevice = function(pi, device, toggle) {
       
@@ -62,6 +69,12 @@ angular.module('derConnectApp')
       }
 
       pi.devices.push(device);
+      device.receive = [];
+
+      var defaultReceive = {};
+      defaultReceive.name = 'My receive';
+
+      device.receive.push(defaultReceive);
 
       $http.put('/api/pis/' + pi._id, pi).success(function (data) {
         // $scope[toggle] = !$scope[toggle];

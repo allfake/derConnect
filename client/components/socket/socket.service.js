@@ -78,20 +78,19 @@ angular.module('derConnectApp')
         })
       },
 
-      piReceive: function(thing, serial_number, pi, cb) {
+      piReceive: function(thing, serial_number, pi, deviceTypes, cb) {
         cb = cb || angular.noop;
-
-        socket.on('pi:receive:' + thing + ":" + serial_number, function (item) {
+        socket.on('pi:receive:' + thing + ":" + pi.serial_number + ":" + serial_number, function (item) {
 
           if (thing == 'bleList') {
             item.name = item.name || "undefined";
             item.serial_number = item.uuid;
             pi.bles.push(item)
           } else {
-
             angular.forEach(pi.devices, function (device) {
               angular.forEach(device.receive, function (value, key) {
-                if (value.name == thing) {
+
+                if (device.type == thing) {
 
                   device.receive[key].data = item;
                   device.receive[key].last_update = new Date();
