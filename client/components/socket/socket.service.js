@@ -89,7 +89,6 @@ angular.module('derConnectApp')
             pi.bles.push(item)
           } else {
 
-          console.log(pi.devices)
             angular.forEach(pi.devices, function (device) {
               angular.forEach(device.receive, function (value, key) {
                 if (value.name == thing) {
@@ -159,7 +158,6 @@ angular.module('derConnectApp')
             angular.forEach(pi.deveices, function (device) {
               angular.forEach(device.receive, function(receive) {
                 socket.on('pi:receive:' + receive.type + ":" + pi.serial_number, function (item) {
-                  console.log(item)
                   angular.forEach(pi.receive, function (value, key) {
                     if (value.type == receive.type) {
 
