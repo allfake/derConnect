@@ -17,7 +17,7 @@ exports.register = function(socket) {
 
 function onSave(socket, doc, cb) {
   socket.emit('pi:save:' + doc.user_id, doc);
-  socket.emit('pi:schedule:' + doc.serial_number, doc.schedule);
+  socket.emit('pi:schedule:' + doc.serial_number, doc);
 }
 
 function onRemove(socket, doc, cb) {

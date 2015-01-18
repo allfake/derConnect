@@ -83,21 +83,23 @@ angular.module('derConnectApp')
 
         socket.on('pi:receive:' + thing + ":" + serial_number, function (item) {
 
-
           if (thing == 'bleList') {
             item.name = item.name || "undefined";
             item.serial_number = item.uuid;
             pi.bles.push(item)
           } else {
 
-            angular.forEach(pi.receive, function (value, key) {
-              if (value.type == thing) {
+          console.log(pi.devices)
+            angular.forEach(pi.devices, function (device) {
+              angular.forEach(device.receive, function (value, key) {
+                if (value.name == thing) {
 
-                pi.receive[key].data = item;
-                pi.receive[key].last_update = new Date();
+                  device.receive[key].data = item;
+                  device.receive[key].last_update = new Date();
 
-                cb(thing, item, pi);
-              }
+                  cb(thing, item, pi);
+                }
+              });
             });
           }
 
@@ -131,9 +133,11 @@ angular.module('derConnectApp')
 
           if (oldItem) {
 
-            angular.forEach(oldItem.receive, function (value) {
-              socket.removeAllListeners('pi:receive:' + value.type + ":" + oldItem.serial_number);
-            })
+            angular.forEach(oldItem.deveices, function (device) {
+              angular.forEach(device.receive, function (value) {
+                socket.removeAllListeners('pi:receive:' + value.type + ":" + oldItem.serial_number);
+              });
+            });
 
             if (item.receive) {
               item.receive.edit = {};
@@ -149,21 +153,21 @@ angular.module('derConnectApp')
             array.push(item);
           }
 
-
           for (var i = 0; i < array.length; i++) {
             var pi = array[i];
 
-            angular.forEach(pi.receive, function (receive) {
-              socket.on('pi:receive:' + receive.type + ":" + pi.serial_number, function (item) {
+            angular.forEach(pi.deveices, function (device) {
+              angular.forEach(device.receive, function(receive) {
+                socket.on('pi:receive:' + receive.type + ":" + pi.serial_number, function (item) {
+                  console.log(item)
+                  angular.forEach(pi.receive, function (value, key) {
+                    if (value.type == receive.type) {
 
-                angular.forEach(pi.receive, function (value, key) {
-                  if (value.type == receive.type) {
-
-                    pi.receive[key].data = item;
-                    pi.receive[key].last_update = new Date();
-                  }
+                      pi.receive[key].data = item;
+                      pi.receive[key].last_update = new Date();
+                    }
+                  });
                 });
-
               });
             });
           }

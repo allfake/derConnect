@@ -8,6 +8,7 @@ angular.module('derConnectApp', [
   'ui.router',
   'ui.bootstrap',
   'mgcrea.ngStrap',
+  'ngTouch',
   'ngModal'
 ])
   .config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {

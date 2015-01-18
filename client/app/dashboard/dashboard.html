@@ -15,12 +15,14 @@
 
   <div ng-repeat="pi in pis | orderBy : 'serial_number' : false" >
     <h2>
-      Pi list [ serialnumber <code>{{ pi.serial_number }}</code> ]
+      Pi [ Serial number <code>{{ pi.serial_number }}</code> ] 
+          <span ng-show="pi.status" class="alert-success">Online</span>
+          <span ng-hide="pi.status" class="alert-danger">Offline</span>
       <button class="btn btn-danger pull-right btn-xs" ng-click="deletePi(pi)">Delete pi</button>
 
     </h2>
     <h3>
-      Device list
+      Add device
       <button class="btn btn-default btn-xs" ng-show="!addNewDevice" ng-click="addNewDevice = true;">+</button>
       <button class="btn btn-default btn-xs" ng-show="addNewDevice" ng-click="addDevice(pi, device, 'addNewDevice')">Add</button>
       <button class="btn btn-danger btn-xs" ng-show="addNewDevice" ng-click="device = {}; addNewDevice = false">Cancel</button>
@@ -154,324 +156,199 @@
           </div>
         </div>
         <div class="col-md-4">
-
+          
           <h3>
             Receive
-            <button class="btn btn-default" ng-click="addNewReceive = true;">+</button>
+            <button class="btn btn-default btn-xs" ng-show="!addNewReceive" ng-click="addNewReceive = true;"> + </button>
+            <button class="btn btn-default btn-xs" ng-show="addNewReceive" ng-click="addReceive(pi, device, receive);">Add</button>
+            <button class="btn btn-danger btn-xs" ng-show="addNewReceive" ng-click="addNewReceive = false">Cancel</button>
           </h3>
-          <div ng-repeat="receive in device.receive">
+
+          <form collapse="!addNewReceive" class="form-horizontal">
+            <div>
+              <div class="form-group">
+                <label class="col-md-2 control-label">
+                  Name
+                </label>
+                <div class="col-md-10">
+                  <input class="form-control" type="text" ng-model="receive.name"/>
+                </div>
+              </div>
+            </div>
+          </form>
+
+          <div ng-repeat="receive in device.receive" 
+               ng-init="isEditReceive = false;">
+            <div class="list-group" ng-show="!isEditReceive" 
+                 ng-mouseover="showEditAction = true" ng-mouseleave="showEditAction = false"
+                 ng-dblclick="isEditReceive = true;
+                        tempReceive.name = receive.name;
+                        tempReceive.data = receive.data">
+              <a href="#" class="list-group-item">
+                <p class="list-group-item-text">
+                  Name
+                  <button ng-show="showEditAction" class="btn btn-danger btn-xs pull-right"
+                          ng-click="removeReceive(pi, device, receive)"
+                    >
+                    Delete
+                  </button>
+                  <button ng-show="showEditAction" class="btn btn-default btn-xs pull-right"
+                          ng-click="isEditReceive = true;
+                                    tempReceive.name = receive.name;
+                                    tempReceive.data = receive.data">
+                    Edit
+                  </button>
+                </p>
+                <h4 class="list-group-item-heading">{{ receive.name }}</h4>
+              </a>
+              <a href="#" class="list-group-item">
+                <p class="list-group-item-text">
+                  Data                   
+                </p>
+                <h4 class="list-group-item-heading">
+                  {{ receive.data || 'waiting for data'}}
+                </h4>
+              </a>
+            </div>
             
+            <div class="list-group" ng-show="isEditReceive">
+              <a href="#" class="list-group-item">
+                <p class="list-group-item-text">Name</p>
+                <input class="form-control" type="text" ng-model="receive.name"/>
+              </a>
+              <a href="#" class="list-group-item">
+                <button class="btn btn-default" ng-click="device.receive[$index] = tempReceive; isEditReceive = false">Cancel</button>
+                <button class="btn btn-success" ng-click="updatePi(pi)">Save</button>
+                
+              </a>
+            </div>
           </div>          
         </div>
         <div class="col-md-4">
           
           <h3>
             Schedule
-            <button class="btn btn-default" ng-click="addNewSchedule = true;">+</button>
+            <button class="btn btn-default btn-xs" ng-show="!addNewSchedule" ng-click="addNewSchedule = true;"> + </button>
+            <button class="btn btn-default btn-xs" ng-show="addNewSchedule" ng-click="addSchedule(pi, device, schedule);">Add</button>
+            <button class="btn btn-danger btn-xs" ng-show="addNewSchedule" ng-click="addNewSchedule = false">Cancel</button>
           </h3>
 
-          <div ng-repeat="schedule in device.schedule">
+          <form collapse="!addNewSchedule" class="form-horizontal">
+            <div>
+              <div class="form-group">
+                <label class="col-md-2 control-label">
+                  Name
+                </label>
+                <div class="col-md-10">
+                  <input class="form-control" type="text" ng-model="schedule.name"/>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-md-2 control-label">
+                  Data
+                </label>
+                <div class="col-md-10">
+                  <input class="form-control" type="text" ng-model="schedule.data"/>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-md-2 control-label">
+                  Interval (Minute)
+                </label>
+                <div class="col-md-10">
+                  <input class="form-control" type="number" min="1" max="60" ng-model="schedule.interval"/>
+                </div>
+              </div>
+            </div>
+          </form>
+          <div ng-repeat="schedule in device.schedule" 
+               ng-init="isEditSchedule = false;">
+            <div class="list-group" ng-show="!isEditSchedule" 
+                 ng-mouseover="showEditAction = true" ng-mouseleave="showEditAction = false"
+                 ng-dblclick="isEditSchedule = true;
+                        tempSchedule.name = schedule.name;
+                        tempSchedule.interval = schedule.interval;
+                        tempSchedule.data = schedule.data">
+              <a href="#" class="list-group-item">
+                <p class="list-group-item-text">
+                  Name
+                  <button ng-show="showEditAction" class="btn btn-danger btn-xs pull-right"
+                          ng-click="removeSchedule(pi, device, schedule)"
+                    >
+                    Delete
+                  </button>
+                  <button ng-show="showEditAction" class="btn btn-default btn-xs pull-right"
+                          ng-click="isEditSchedule = true;
+                                    tempSchedule.name = schedule.name;
+                                    tempSchedule.interval = schedule.interval;
+                                    tempSchedule.data = schedule.data">
+                    Edit
+                  </button>
+                </p>
+                <h4 class="list-group-item-heading">{{ schedule.name }}</h4>
+              </a>
+              <a href="#" class="list-group-item">
+                <p class="list-group-item-text">
+                  Data
+                </p>
+                <h4 class="list-group-item-heading">{{ schedule.data }}</h4>
+              </a>
+              <a href="#" class="list-group-item">
+                <p class="list-group-item-text">
+                  Interval (Minute)
+                </p>
+                <h4 class="list-group-item-heading">{{ schedule.interval }}</h4>
+              </a>
+            </div>
             
-          </div>          
+            <div class="list-group" ng-show="isEditSchedule">
+              <a href="#" class="list-group-item">
+                <p class="list-group-item-text">Name</p>
+                <input class="form-control" type="text" ng-model="schedule.name"/>
+              </a>
+              <a href="#" class="list-group-item">
+                <p class="list-group-item-text">Data</p>
+                <input class="form-control" type="text" ng-model="schedule.data"/>
+              </a>
+              <a href="#" class="list-group-item">
+                <p class="list-group-item-text">Interval (Minute)</p>
+                <input class="form-control" type="number" min="1" max="60" ng-model="schedule.interval"/>
+              </a>
+              <a href="#" class="list-group-item">
+                <button class="btn btn-default" ng-click="device.schedule[$index] = tempSchedule; isEditSchedule = false">Cancel</button>
+                <button class="btn btn-success" ng-click="updatePi(pi)">Save</button>
+              </a>
+            </div>
+          </div>       
         </div>
       </div>
-
     </div>
-
-    <div class="panel panel-default" ng-class="pi.status ? 'panel-success' : 'panel-danger'">
-      <div class="panel-heading">
-        <div class="center">
-          Serial number : {{pi.serial_number}} 
-          | 
-          <span ng-show="pi.status">Status Online</span>
-          <span ng-hide="pi.status">Status Offline</span>
-          <button type="button" class="close pull-right" ng-click="deletePi(pi)"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        </div>
+    <div class="panel panel-default">
+      <!-- Default panel contents -->
+      <div class="panel-heading panel-default">
+        Ble List
+        <button type="butoon" class="btn btn-default btn-xs pull-right" ng-click="rescan(pi)">Rescan Ble</button>
+        <button type="butoon" class="btn btn-default btn-xs pull-right" ng-click="show = !show" ng-init="show = true">Toggle show</button>
       </div>
       <div class="panel-body">
-        <div ng-show="pi.localIp">Local ip {{pi.localIp}}</div>
-        <hr/>
-        <h2>Action list</h2>
-        <hr/>
-        <div ng-init="action.edit = {}" ng-repeat="action in pi.action" ng-mouseover="showEditAction = true" ng-mouseleave="showEditAction = false">
-          <a class="pull-right" ng-show="showEditAction && !action.edit.type" ng-click="removeAction(pi, action)">Remove</a>
-          <div>
-            <label>Name</label>
-            <span ng-click="action.edit.tempName = action.type; action.edit.name = true">
-              <span ng-hide="action.edit.name">
-                {{action.name}}
-              </span>
-            </span>
-            <span ng-show="action.edit.name">
-              <span>
-                <input ng-model="action.name"/>
-              </span>
-              <button type="button" class="btn btn-default" ng-click="updatePi(pi); action.edit.name = false;">Save</button>
-              <button type="button" class="btn btn-default" ng-click="action.type = action.edit.tempName; action.edit.name = false">Cancel</button>
-            </span>
-            <a ng-show="showEditAction && !action.edit.name" ng-click="action.edit.tempName = action.type; action.edit.name = true">Edit</a>
-          </div>
-          <div>
-            <label>Type</label>
-            <span ng-click="action.edit.tempType = action.type; action.edit.type = true;">
-              <span ng-hide="action.edit.type">
-                {{action.type}}
-              </span>
-            </span>
-            <span ng-show="action.edit.type">
-              <input ng-model="action.type"/>
-              <button type="button" class="btn btn-default" ng-click="updatePi(pi); action.edit.type = false;">Save</button>
-              <button type="button" class="btn btn-default" ng-click="action.edit.type = false; action.type = action.edit.tempType">Cancel</button>
-            </span>
-            <a ng-show="showEditAction && !action.edit.type" ng-click="action.edit.tempType = action.type; action.edit.type = true">Edit</a>
-          </div>
-          <div>
-            <label>Data</label>
-            <span ng-click="action.edit.tempData = action.data; action.edit.data = true;">
-              <span ng-hide="action.edit.data">
-                {{action.data}}
-              </span>
-            </span>
-            <span ng-show="action.edit.data">
-              <input ng-model="action.data"/>
-              <button type="button" class="btn btn-default" ng-click="updatePi(pi); action.edit.data = false;">Save</button>
-              <button type="button" class="btn btn-default" ng-click="action.edit.data = false; action.data = action.edit.tempData">Cancel</button>
-            </span>
-            <a ng-show="showEditAction && !action.edit.data" ng-click="action.edit.tempData = action.data; action.edit.data = true">Edit</a>
-          </div>
-          <div>
-            <label>Serial number</label>
-            <span ng-click="action.edit.tempSerialNumber = action.serial_number; action.edit.serial_number = true;">
-              <span ng-hide="action.edit.serial_number">
-                {{action.serial_number}}
-              </span>
-            </span>
-            <span ng-show="action.edit.serial_number">
-              <input ng-model="action.serial_number"/>
-              <button type="button" class="btn btn-default" ng-click="updatePi(pi); action.edit.serial_number = false;">Save</button>
-              <button type="button" class="btn btn-default" ng-click="action.edit.serial_number = false; action.serial_number = action.edit.tempSerialNumber">Cancel</button>
-            </span>
-            <a ng-show="showEditAction && !action.edit.serial_number" ng-click="action.edit.tempSerialNumber = action.serial_number; action.edit.serial_number = true">Edit</a>
-          </div>
-          <button class="btn btn-default" ng-click="takeAction(pi, action)">Play</button>
-          <hr/>
-        </div>
-
-        <h2>Receive list</h2>
-        <hr/>
-        <div ng-init="receive.edit = {}" ng-repeat="receive in pi.receive" ng-mouseover="showEditReceive = true" ng-mouseleave="showEditReceive = false">
-          <a class="pull-right" ng-show="showEditReceive && !receive.edit.type" ng-click="removeReceive(pi, receive)">Remove</a>
-          <div>
-            <label>Name</label>
-            <span ng-click="receive.edit.tempName = receive.type; receive.edit.name = true">
-              <span ng-hide="receive.edit.name">
-                {{receive.name}}
-              </span>
-            </span>
-            <span ng-show="receive.edit.name">
-              <span>
-                <input ng-model="receive.name"/>
-              </span>
-              <button type="button" class="btn btn-default" ng-click="updatePi(pi); receive.edit.name = false;">Save</button>
-              <button type="button" class="btn btn-default" ng-click="receive.type = receive.edit.tempName; receive.edit.name = false">Cancel</button>
-            </span>
-            <a ng-show="showEditReceive && !receive.edit.name" ng-click="receive.edit.tempName = receive.type; receive.edit.name = true">Edit</a>
-          </div>
-          <div>
-          <label>Type</label>
-            <span ng-click="receive.edit.tempType = receive.type; receive.edit.type = true;">
-              <span ng-hide="receive.edit.type">
-                {{receive.type}}
-              </span>
-            </span>
-            <span ng-show="receive.edit.type">
-              <input ng-model="receive.type"/>
-              <button type="button" class="btn btn-default" ng-click="updatePi(pi); receive.edit.type = false;">Save</button>
-              <button type="button" class="btn btn-default" ng-click="receive.edit.type = false; receive.type = receive.edit.tempType">Cancel</button>
-            </span>
-            <a ng-show="showEditReceive && !receive.edit.type" ng-click="receive.edit.tempType = receive.type; receive.edit.type = true">Edit</a>
-          </div>
-          <div>
-            <label>data</label>
-            <span>
-              {{receive.data || 'Waitting for data'}}
-
-              <div ng-if="receive.data">
-                <label>Last Update</label>
-                {{receive.last_update | date:"medium"}}
-              </div>
-            </span>
-          </div>
-          <hr/>
-        </div>
-
-        <h2>Schedule list</h2>
-        <hr/>
-        <div ng-init="schedule.edit = {}" ng-repeat="schedule in pi.schedule track by $index" ng-mouseover="showEditSchedule = true" ng-mouseleave="showEditSchedule = false">
-          <a class="pull-right" ng-show="showEditSchedule && !schedule.edit.type" ng-click="removeSchedule(pi, schedule)">Remove</a>
-          <div>
-            <label>Name</label>
-            <span ng-click="schedule.edit.tempName = schedule.type; schedule.edit.name = true">
-              <span ng-hide="schedule.edit.name">
-                {{schedule.name}}
-              </span>
-            </span>
-            <span ng-show="schedule.edit.name">
-              <span>
-                <input ng-model="schedule.name"/>
-              </span>
-              <button type="button" class="btn btn-default" ng-click="updatePi(pi); schedule.edit.name = false;">Save</button>
-              <button type="button" class="btn btn-default" ng-click="schedule.type = schedule.edit.tempName; schedule.edit.name = false">Cancel</button>
-            </span>
-            <a ng-show="showEditSchedule && !schedule.edit.name" ng-click="schedule.edit.tempName = schedule.type; schedule.edit.name = true">Edit</a>
-          </div>
-          <div>
-          <label>Type</label>
-            <span ng-click="schedule.edit.tempType = schedule.type; schedule.edit.type = true;">
-              <span ng-hide="schedule.edit.type">
-                {{schedule.type}}
-              </span>
-            </span>
-            <span ng-show="schedule.edit.type">
-              <input ng-model="schedule.type"/>
-              <button type="button" class="btn btn-default" ng-click="updatePi(pi); schedule.edit.type = false;">Save</button>
-              <button type="button" class="btn btn-default" ng-click="schedule.edit.type = false; schedule.type = schedule.edit.tempType">Cancel</button>
-            </span>
-            <a ng-show="showEditSchedule && !schedule.edit.type" ng-click="schedule.edit.tempType = schedule.type; schedule.edit.type = true">Edit</a>
-          </div>
-          <div>
-            <label>Data</label>
-            <span ng-click="schedule.edit.tempData = schedule.data; schedule.edit.data = true;">
-              <span ng-hide="schedule.edit.data">
-                {{schedule.data}}
-              </span>
-            </span>
-            <span ng-show="schedule.edit.data">
-              <input ng-model="schedule.data"/>
-              <button type="button" class="btn btn-default" ng-click="updatePi(pi); schedule.edit.data = false;">Save</button>
-              <button type="button" class="btn btn-default" ng-click="schedule.edit.data = false; schedule.data = schedule.edit.tempData">Cancel</button>
-            </span>
-            <a ng-show="showEditSchedule && !schedule.edit.data" ng-click="schedule.edit.tempData = schedule.data; schedule.edit.data = true">Edit</a>
-          </div>
-<!--           <div>
-            <label>Fire Date</label>
-            <span ng-click="schedule.edit.tempFire = schedule.fire; schedule.edit.fire = true;">
-              <span ng-hide="schedule.edit.fire">
-                {{schedule.fire}}
-              </span>
-            </span>
-            <span ng-show="schedule.edit.fire">
-              <input type="date" ng-model="schedule.fire"/>
-              <button type="button" class="btn btn-default" ng-click="updatePi(pi); schedule.edit.fire = false;">Save</button>
-              <button type="button" class="btn btn-default" ng-click="schedule.edit.fire = false; schedule.fire = schedule.edit.tempFire">Cancel</button>
-            </span>
-            <a ng-show="showEditSchedule && !schedule.edit.fire" ng-click="schedule.edit.tempFire = schedule.fire; schedule.edit.fire = true">Edit</a>
-          </div> -->
-          <div>
-            <label>Interval every</label>
-            <span ng-click="schedule.edit.tempInterval = schedule.interval; schedule.edit.interval = true;">
-              <span ng-hide="schedule.edit.interval">
-                {{schedule.interval}}
-              </span>
-            </span>
-            <span ng-show="schedule.edit.interval">
-              <input type="number" min="1" max="60" ng-model="schedule.interval"/>
-              <button type="button" class="btn btn-default" ng-click="updatePi(pi); schedule.edit.interval = false;">Save</button>
-              <button type="button" class="btn btn-default" ng-click="schedule.edit.interval = false; schedule.interval = schedule.edit.tempInterval">Cancel</button>
-            </span>
-            <a ng-show="showEditSchedule && !schedule.edit.interval" ng-click="schedule.edit.tempInterval = schedule.interval; schedule.edit.interval = true">Edit</a>
-          </div>
-          <hr/>
-        </div>
-
-        <div class="panel panel-default">
-          <!-- Default panel contents -->
-          <div class="panel-heading">
-            Ble List
-            <button type="butoon" class="btn btn-default btn-xs pull-right" ng-click="rescan(pi)">Rescan Ble</button>
-            <button type="butoon" class="btn btn-default btn-xs pull-right" ng-click="show = !show" ng-init="show = true">Toggle show</button>
-          </div>
-          <div class="panel-body">
-            <!-- Table -->
-            Total found : {{ pi.bles.length || 0 }}
-            <table class="table" ng-show="pi.bles.length > 0 && show">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Address</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr ng-repeat="ble in pi.bles">
-                  <td>{{ ble.name }}</td>
-                  <td>{{ ble.serial_number }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
+        <!-- Table -->
+        Total found : {{ pi.bles.length || 0 }}
+        <table class="table" ng-show="pi.bles.length > 0 && show">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Address</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="ble in pi.bles">
+              <td>{{ ble.name }}</td>
+              <td>{{ ble.serial_number }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <div class="panel-footer">
-        <div>
-          <a ng-click="actionEditting = true">
-            Add Action
-          </a>
-          <span ng-show="actionEditting" ng-click="actionEditting = false">Cancel</span>
-          <div ng-show="actionEditting">
-            <label>Name</label>
-            <input type="text" ng-model="newAction.name"/> 
-            <label>Type</label>
-            <!-- <input type="text" ng-model="newAction.type"/>  -->
-            <select ng-options="deviceType.name as deviceType.name for deviceType in deviceTypes | filter:{ type: 'action' } " ng-model="newAction.type"></select>
-
-            <label>Data</label>
-            <input type="text" ng-model="newAction.data"/> 
-            <label>Serial number</label>
-            <input type="text" ng-model="newAction.serial_number"/> 
-            <button type="button" class="btn btn-default" ng-click="addAction(pi, newAction); actionEditting = false;">Save</button>
-          </div>
-        </div>
-        <div>
-          <a ng-click="receiveEditting = true">
-            Add Receive
-          </a>
-          <span ng-show="receiveEditting" ng-click="receiveEditting = false">Cancel</span>
-          <div ng-show="receiveEditting">
-            <label>Name</label>
-            <input type="text" ng-model="newReceive.name"/>
-            <label>Type</label>
-            <!-- <input type="text" ng-model="newReceive.type"/>  -->
-            <select ng-options="deviceType.name as deviceType.name for deviceType in deviceTypes | filter:{ type: 'receive' } " ng-model="newReceive.type"></select>
-
-            <button type="button" class="btn btn-default" ng-click="addReceive(pi, newReceive); receiveEditting = false;">Save</button>
-          </div>
-        </div>
-        <form>
-        <div>
-          <a ng-click="scheduleEditting = true">
-            Add Schedule
-          </a>
-          <span ng-show="scheduleEditting" ng-click="scheduleEditting = false">Cancel</span>
-          <div ng-show="scheduleEditting">
-            <label>Name</label>
-            <input type="text" ng-model="newSchedule.name" require/> 
-            <label>Type</label>
-
-            <select ng-options="deviceType.name as deviceType.name for deviceType in deviceTypes | filter:{ type: 'schedule' } " ng-model="newSchedule.type"></select>
-
-            <label>Data</label>
-            <input type="text" ng-model="newSchedule.data" require/>
-            <!-- <label>Date</label>
-            <input type="date" ng-model="newSchedule.fire"/> -->
-            <label>Interval every (minute)</label>
-            <input type="number" min="1" max="60" ng-model="newSchedule.interval" require/>
-            <button type="button" class="btn btn-default" ng-click="addSchedule(pi, newSchedule)">Save</button>
-          </div>
-        </div>
-        </form>
-      </div>
-    </div> 
+    </div>
   </div>
 </div>
   <modal-dialog show='dialogAddPi' dialog-title='New raspbery pi'>

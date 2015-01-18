@@ -34,10 +34,11 @@ angular.module('derConnectApp')
         pi.bles = [];
         socket.piReceive('bleList', pi.serial_number, pi);
 
-        angular.forEach(pi.receive, function (value) {
-          socket.piReceive(value.type, pi.serial_number, pi);
+        angular.forEach(pi.devices, function (d) {
+          angular.forEach(d.receive, function (value) {
+            socket.piReceive(d.type, pi.serial_number, pi);
+          });
         });
-
       }
 
 
@@ -111,27 +112,27 @@ angular.module('derConnectApp')
       socket.piAction(pi, action);
     }
 
-    $scope.addSchedule = function(pi, schedule, editting) {
+    $scope.addSchedule = function(pi, device, schedule) {
 
       if (!$scope.validateSchdule(schedule)) {
         return;
       } 
 
-      if (pi.schedule.length == 0) {
-        pi.schedule = []; 
+      if (device.schedule.length == 0) {
+        device.schedule = []; 
       }
-      pi.schedule.push(schedule);
+      device.schedule.push(schedule);
 
       $http.put('/api/pis/' + pi._id, pi).success(function (data) {
-        $scope.scheduleEditting = false;
+        // $scope.scheduleEditting = false;
       });
     }
 
-    $scope.addReceive = function(pi, receive) {
-      if (pi.receive.length == 0) {
-        pi.receive = []; 
+    $scope.addReceive = function(pi, device, receive) {
+      if (device.receive.length == 0) {
+        device.receive = []; 
       }
-      pi.receive.push(receive);
+      device.receive.push(receive);
       
       $http.put('/api/pis/' + pi._id, pi).success(function (data) {
 
@@ -162,27 +163,26 @@ angular.module('derConnectApp')
       });
     }
 
-    $scope.removeReceive = function(pi, receive) {
-      if (pi.receive.length == 0) {
-        pi.receive = []; 
+    $scope.removeReceive = function(pi, device, receive) {
+      if (device.receive.length == 0) {
+        device.receive = []; 
       }
-      pi.receive.push(receive);
       
-      pi.receive = _.remove(pi.receive, function(s) { return s != receive; });
-      pi.receive = _.without(pi.receive, null);
+      device.receive = _.remove(device.receive, function(s) { return s != receive; });
+      device.receive = _.without(device.receive, null);
 
       $http.put('/api/pis/' + pi._id, pi).success(function (data) {
 
       });
     }
 
-    $scope.removeSchedule = function(pi, schedule) {
-      if (pi.schedule.length == 0) {
-        pi.schedule = []; 
+    $scope.removeSchedule = function(pi, device, schedule) {
+      if (device.schedule.length == 0) {
+        device.schedule = []; 
       }
 
-      pi.schedule = _.remove(pi.schedule, function(s) { return s != schedule; });
-      pi.schedule = _.without(pi.schedule, null);
+      device.schedule = _.remove(device.schedule, function(s) { return s != schedule; });
+      device.schedule = _.without(device.schedule, null);
       
       $http.put('/api/pis/' + pi._id, pi).success(function (data) {
         
@@ -231,7 +231,7 @@ angular.module('derConnectApp')
 
     $scope.validateSchdule = function (schedule) {
               
-      if(!!!schedule || !schedule.interval || !schedule.data || !schedule.type || !schedule.name) {
+      if(!!!schedule || !schedule.interval || !schedule.data || !schedule.name) {
         toastr["error"]("Please fill all field")
         return false;
       } else {
