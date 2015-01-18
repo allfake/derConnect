@@ -30,6 +30,26 @@ var User = require('../api/user/user.model');
 //   });
 // });
 
+User.find({})
+
+User.findOne({
+  name: 'admin'
+}, function(err, user) {
+  if (!user) {
+    User.create(
+    {
+      provider: 'local',
+      role: 'admin',
+      name: 'Admin',
+      email: 'admin@admin.com',
+      password: 'adminderconnect'
+    }, function() {
+        console.log('finished populating users');
+      }
+    );
+  }
+});
+
 // User.find({}).remove(function() {
 //   User.create({
 //     provider: 'local',
