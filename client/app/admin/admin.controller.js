@@ -3,6 +3,7 @@
 angular.module('derConnectApp')
   .controller('AdminCtrl', function ($scope, $http, Auth, User) {
 
+    $scope.currentUser = Auth.getCurrentUser();
     // Use the User $resource to fetch all users
     $scope.users = User.query();
 
