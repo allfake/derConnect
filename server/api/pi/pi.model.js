@@ -49,6 +49,7 @@ var PiSchema = new Schema({
   devices: [DeviceSchema],
   info: String,
   scheduleSync: Number,
+  status: Number,
   active: Boolean
 });
 

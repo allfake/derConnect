@@ -7,6 +7,7 @@
 
 var Thing = require('../api/thing/thing.model');
 var User = require('../api/user/user.model');
+// var Pi = require('../api/pi/pi.model');
 
 // Thing.find({}).remove(function() {
 //   Thing.create({
@@ -30,10 +31,9 @@ var User = require('../api/user/user.model');
 //   });
 // });
 
-User.find({})
 
 User.findOne({
-  name: 'admin'
+  email: 'admin@derconnect.com'
 }, function(err, user) {
   if (!user) {
     User.create(
@@ -41,7 +41,7 @@ User.findOne({
       provider: 'local',
       role: 'admin',
       name: 'Admin',
-      email: 'admin@admin.com',
+      email: 'admin@derconnect.com',
       password: 'adminderconnect'
     }, function() {
         console.log('finished populating users');

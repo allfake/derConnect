@@ -6,6 +6,8 @@
 
 var Pi = require('./pi.model');
 
+Pi.update({}, {$set: {status: 0}});
+
 exports.register = function(socket) {
   Pi.schema.post('save', function (doc) {
     onSave(socket, doc);

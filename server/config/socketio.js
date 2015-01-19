@@ -28,8 +28,17 @@ function onDisconnect(socket) {
 
       _.each(pis, function(pi) {
 
+        pi.status = 0;
+        pi.save(function (err) {
+          if (err) {
+            console.log(err);
+          }
+        });
+
         if (userSocket[pi.user_id]) {
-          userSocket[pi.user_id].emit('pi:offline', pi);
+
+
+          // userSocket[pi.user_id].emit('pi:offline', pi);
         }
         
       });
@@ -72,8 +81,15 @@ function onConnect(socket) {
 
       _.each(pis, function(pi) {
 
+        pi.status = 1;
+        pi.save(function (err) {
+          if (err) {
+            console.log(err);
+          }
+        });
+
         if (userSocket[pi.user_id]) {
-          userSocket[pi.user_id].emit('pi:online', pi);
+          // userSocket[pi.user_id].emit('pi:online', pi);
         }
 
       });
@@ -179,7 +195,17 @@ module.exports = function (socketio) {
 
         _.each(pis, function(pi) {
           if (userSocket[pi.user_id]) {
-            userSocket[pi.user_id].emit("pi:receive:" + thing + ":" + serialNumber + ":" + uuid, data);
+
+            if (uuid) {
+
+              userSocket[pi.user_id].emit("pi:receive:" + thing + ":" + serialNumber + ":" + uuid, data);
+
+            } else if (!uuid) {
+
+              userSocket[pi.user_id].emit("pi:receive:" + thing + ":" + serialNumber, data);
+
+            }
+
           }
 
         });

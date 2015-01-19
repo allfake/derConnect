@@ -16,6 +16,7 @@
   <div ng-repeat="pi in pis | orderBy : 'serial_number' : false" >
     <h2>
       Pi [ Serial number <code ng-class="{ 'alert-success': pi.status == true, 'alert-danger': pi.status == false }" >{{ pi.serial_number }}</code> ] 
+          <span ng-show"pi.localIp"> {{ pi.localIp }}</span>
           <span ng-show="pi.status" class="alert-success">Online</span>
           <span ng-hide="pi.status" class="alert-danger">Offline</span>
       <button class="btn btn-danger pull-right btn-xs" ng-click="deletePi(pi)">Delete pi</button>

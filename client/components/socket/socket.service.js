@@ -54,28 +54,43 @@ angular.module('derConnectApp')
 
       piOnline: function (array) {
 
-        socket.on('pi:online', function (data) {
-          array = _.map(array, function (pi) {
-            if (pi.serial_number == data.serial_number) {
-              pi.status = 1;
-            } else {
-              pi.status = 0;
-            }
-            return pi;
-          });
-        });
+        // socket.on('pi:online', function (data) {
+        //   array = _.map(array, function (pi) {
+        //     if (pi.serial_number == data.serial_number) {
+        //       pi.status = 1;
+        //     } else {
+        //       pi.status = 0;
+        //     }
+        //     return pi;
+        //   });
+        // });
       },
 
       piOffline: function (array) {
         
-        socket.on('pi:offline', function (data) {
-          array = _.map(array, function (pi) {
-            if (pi.serial_number == data.serial_number) {
-              pi.status = 0;
-            }
-            return pi;            
-          });
-        })
+        // socket.on('pi:offline', function (data) {
+        //   array = _.map(array, function (pi) {
+        //     if (pi.serial_number == data.serial_number) {
+        //       pi.status = 0;
+        //     }
+        //     return pi;            
+        //   });
+        // })
+      },
+
+      piReserve: function(thing, pi, deviceTypes, cb) {
+        cb = cb || angular.noop;
+        socket.on('pi:receive:' + thing + ":" + pi.serial_number, function (item) {
+          console.log(item)
+          if (thing == 'localIp') {
+            pi.localIp = item;
+          }
+
+          cb(thing, pi, deviceTypes);
+
+        });
+
+
       },
 
       piReceive: function(thing, serial_number, pi, deviceTypes, cb) {
@@ -141,9 +156,9 @@ angular.module('derConnectApp')
               item.receive.edit = {};
             }
 
-            if (oldItem.status) {
-              item.status = oldItem.status;
-            }
+            // if (oldItem.status) {
+            //   item.status = oldItem.status;
+            // }
 
             array.splice(index, 1, item);
             event = 'updated';

@@ -23,15 +23,13 @@ angular.module('derConnectApp')
 
         $scope.pis = pis;
         
-        socket.piOnline($scope.pis);
-        socket.piOffline($scope.pis);
-
-
         for (var i = 0; i < $scope.pis.length; i++) {
           var pi = $scope.pis[i];
 
           pi.bles = [];
+
           socket.piReceive('bleList', pi.serial_number, pi);
+          socket.piReserve('localIp', pi);
 
           angular.forEach(pi.devices, function (d) {
             angular.forEach(d.receive, function (value) {
