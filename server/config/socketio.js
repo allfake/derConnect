@@ -37,7 +37,6 @@ function onDisconnect(socket) {
 
         if (userSocket[pi.user_id]) {
 
-
           // userSocket[pi.user_id].emit('pi:offline', pi);
         }
         
@@ -113,7 +112,7 @@ function onConnect(socket) {
       _.each(pis, function(pi) {
 
         if (piSocket[pi.serial_number]) {
-          socket.emit('pi:online', pi);
+          // socket.emit('pi:online', pi);
         }
 
       });
@@ -195,6 +194,30 @@ module.exports = function (socketio) {
 
         _.each(pis, function(pi) {
           if (userSocket[pi.user_id]) {
+
+            if (thing == 'localIp') {
+
+              pi.last_update_ip = new Date();
+              pi.local_ip = data;
+              pi.save(function (err) {
+                if (err) {
+                  console.log(err);
+                }
+              });
+              
+            }
+
+            if (thing == 'ip') {
+
+              pi.last_update_local_ip = new Date();
+              pi.ip = data;
+              pi.save(function (err) {
+                if (err) {
+                  console.log(err);
+                }
+              });
+              
+            }
 
             if (uuid) {
 

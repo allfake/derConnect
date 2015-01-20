@@ -84,6 +84,10 @@ angular.module('derConnectApp')
         return;
       }
       $http.post('/api/pis', { user_id: Auth.getCurrentUser()._id , serial_number: $scope.pi.newSerialNumber }).success(function(data) {
+        $scope.dialogAddPi = 0;
+      }).error(function(data, status, headers, config) {
+        toastr["error"](data.message);
+
       });
       $scope.pi.newSerialNumber = '';
     };
@@ -102,6 +106,17 @@ angular.module('derConnectApp')
 
       });
     }
+
+    $scope.updateDevice = function(pi, device) {
+      
+      if (!$scope.validateDevice(device)) {
+        return;
+      }
+
+      $http.put('/api/pis/' + pi._id, pi).success(function (data) {
+        // $scope[toggle] = !$scope[toggle];
+      });
+    };
 
     $scope.addAction = function(pi, device, action, toggle) {
 

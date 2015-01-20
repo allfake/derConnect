@@ -48,6 +48,10 @@ var PiSchema = new Schema({
   user_id: String,
   devices: [DeviceSchema],
   info: String,
+  ip: String,
+  local_ip: String,
+  last_update_ip: Date,
+  last_update_local_ip: Date,
   scheduleSync: Number,
   status: Number,
   active: Boolean

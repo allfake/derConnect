@@ -81,7 +81,7 @@ angular.module('derConnectApp')
       piReserve: function(thing, pi, deviceTypes, cb) {
         cb = cb || angular.noop;
         socket.on('pi:receive:' + thing + ":" + pi.serial_number, function (item) {
-          console.log(item)
+
           if (thing == 'localIp') {
             pi.localIp = item;
           }

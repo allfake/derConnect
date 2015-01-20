@@ -1,27 +1,25 @@
 <div ng-include="'components/navbar/navbar.html'"></div>
 
 <div class="container">
-  {{aaa}}
-  <div class="alert alert-info" role="alert">
-    <span> 
-      Happy to see you.
-    </span>
-    <a href="#" class="pull-right btn btn-default btn-xs" ng-init="dialogAddPi = 0" ng-click="dialogAddPi = !dialogAddPi"> 
-      Add new Raspberry pi
-      <span class="glyphicon glyphicon-heart"></span>
-    </a>
-  </div>
+
+  <button class="btn btn-primary btn-xs pull" ng-init="dialogAddPi = 0" ng-click="dialogAddPi = 1">Add new Raspberry pi <span class="badge" ng-show="pis.length"> Total pi: {{ pis.length }} </span></button>
 
 
   <div ng-repeat="pi in pis | orderBy : 'serial_number' : false" >
     <h2>
       Pi [ Serial number <code ng-class="{ 'alert-success': pi.status == true, 'alert-danger': pi.status == false }" >{{ pi.serial_number }}</code> ] 
-          <span ng-show"pi.localIp"> {{ pi.localIp }}</span>
           <span ng-show="pi.status" class="alert-success">Online</span>
           <span ng-hide="pi.status" class="alert-danger">Offline</span>
       <button class="btn btn-danger pull-right btn-xs" ng-click="deletePi(pi)">Delete pi</button>
-
     </h2>
+    <h3>
+      <span class="small" ng-show="pi.ip">Ip {{ pi.ip }}</span>
+      <span class="small" ng-show="pi.last_update_ip">Last update {{ pi.last_update_ip | date:'medium' }}</span>
+    </h3>
+    <h3>
+      <span class="small" ng-show="pi.local_ip">Local ip {{ pi.local_ip }}</span>
+      <span class="small" ng-show="pi.last_update_local_ip">Last update {{ pi.last_update_local_ip | date:'medium' }}</span>
+    </h3>
     <h3>
       Add device
       <button class="btn btn-default btn-xs" ng-show="!addNewDevice" ng-click="addNewDevice = true;">+</button>
@@ -60,13 +58,50 @@
 
     <div class="row" ng-repeat="device in pi.devices">
 
-      <blockquote class="col-md-12">
+      <blockquote class="col-md-12" ng-mouseover="showEditDevice = true" ng-mouseleave="showEditDevice = false">
         <p class="">
           Device name <code>{{ device.name }}</code> Type <code>{{ device.type }}</code> UUID <code>{{ device.uuid }}</code>
+          <button class="btn btn-default btn-xs" ng-show="editDevice" ng-click="editDevice = false">Cancel</button>
+          <button class="btn btn-info btn-xs" ng-show="editDevice" ng-click="pi.devices[$index] = tempDevice; updateDevice(pi, tempDevice);">Update</button>
+          <button class="btn btn-default btn-xs" 
+                  ng-show="!editDevice && showEditDevice" 
+                  ng-click="editDevice = true;
+                            tempDevice.name = device.name;
+                            tempDevice.uuid = device.uuid;
+                            tempDevice.type = device.type"  >Edit</button>
           <button class="btn btn-danger pull-right btn-xs" ng-click="removeDevice(pi, device)">Delete device</button>
         </p>
 
       </blockquote>
+
+      <form collapse="!editDevice" class="form-horizontal">
+        <div>
+          <div class="form-group">
+            <label class="col-md-1 control-label">
+              Name
+            </label>
+            <div class="col-md-4">
+              <input class="form-control" type="text" ng-model="tempDevice.name"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-1 control-label">
+              UUID
+            </label>
+            <div class="col-md-4">
+              <input class="form-control" type="text" ng-model="tempDevice.uuid"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-1 control-label">
+              Type
+            </label>
+            <div class="col-md-4">
+                <select class="form-control" ng-options="deviceType.name as deviceType.name for deviceType in deviceTypes" ng-model="tempDevice.type"></select>
+            </div>
+          </div>
+        </div>
+      </form>
 
       <div>
         <div class="col-md-4">
