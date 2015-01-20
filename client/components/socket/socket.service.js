@@ -146,22 +146,52 @@ angular.module('derConnectApp')
 
           if (oldItem) {
 
-            angular.forEach(oldItem.deveices, function (device) {
+            angular.forEach(oldItem.devices, function (device) {
               angular.forEach(device.receive, function (value) {
                 socket.removeAllListeners('pi:receive:' + value.type + ":" + oldItem.serial_number);
               });
             });
 
-            if (item.receive) {
-              item.receive.edit = {};
+            //save previous stage
+            if (oldItem.addNewDevice) {
+              item.addNewDevice = oldItem.addNewDevice;
+              item.newDevice = oldItem.newDevice;
             }
 
-            // if (oldItem.status) {
-            //   item.status = oldItem.status;
-            // }
+            angular.forEach(oldItem.devices, function (device, index) {
+
+              if (device.editDevice) {
+                item.devices[index].editDevice = device.editDevice;
+                item.devices[index].tempDevice = device.tempDevice;
+              }
+
+              if (device.addNewAction) {
+                item.devices[index].addNewAction = device.addNewAction;
+                item.devices[index].action = device.action; 
+              }
+
+              if (device.addNewAction) {
+                item.devices[index].addNewAction = device.addNewAction;
+                item.devices[index].action = device.action; 
+              }
+
+              if (device.addNewSchedule) {
+                item.devices[index].addNewSchedule = device.addNewSchedule;
+                item.devices[index].schedule = device.schedule; 
+              }
+
+
+              angular.forEach(device.receive, function (value) {
+                // socket.removeAllListeners('pi:receive:' + value.type + ":" + oldItem.serial_number);
+              });
+            });
+
+
+
 
             array.splice(index, 1, item);
             event = 'updated';
+            
           } else {
             array.push(item);
           }
@@ -169,7 +199,7 @@ angular.module('derConnectApp')
           for (var i = 0; i < array.length; i++) {
             var pi = array[i];
 
-            angular.forEach(pi.deveices, function (device) {
+            angular.forEach(pi.devices, function (device) {
               angular.forEach(device.receive, function(receive) {
                 socket.on('pi:receive:' + receive.type + ":" + pi.serial_number, function (item) {
                   angular.forEach(pi.receive, function (value, key) {
