@@ -6,7 +6,11 @@ angular.module('derConnectApp')
     $scope.pi = {};
     $scope.pi.newSerialNumber = "";
 
+    $('body').loading();
+
     $http.get('/api/deviceTypes/').success(function(deviceTypes) {
+
+      $('body').loading('stop');
 
       $scope.deviceTypes = deviceTypes;
       
@@ -76,6 +80,8 @@ angular.module('derConnectApp')
 
       $http.put('/api/pis/' + pi._id, pi).success(function (data) {
         // $scope[toggle] = !$scope[toggle];
+        pi.newDevice = {}; 
+        pi.addNewDevice = false
       });
     };
 

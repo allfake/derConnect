@@ -23,7 +23,7 @@
     <h3>
       Add device
       <button class="btn btn-default btn-xs" ng-show="!pi.addNewDevice" ng-click="pi.addNewDevice = true;">+</button>
-      <button class="btn btn-default btn-xs" ng-show="pi.addNewDevice" ng-click="addDevice(pi, pi.newDevice, 'pi.addNewDevice')">Add</button>
+      <button class="btn btn-default btn-xs" ng-show="pi.addNewDevice" ng-click="addDevice(pi, pi.newDevice, 'pi.addNewDevice'); pi.newDevice = {}; pi.addNewDevice = false">Add</button>
       <button class="btn btn-danger btn-xs" ng-show="pi.addNewDevice" ng-click="pi.newDevice = {}; pi.addNewDevice = false">Cancel</button>
     </h3>
 

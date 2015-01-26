@@ -197,25 +197,24 @@ module.exports = function (socketio) {
 
             if (thing == 'localIp') {
 
-              pi.last_update_ip = new Date();
-              pi.local_ip = data;
-              pi.save(function (err) {
-                if (err) {
-                  console.log(err);
+              pi.update(
+                { 
+                  last_update_local_ip: new Date(),
+                  local_ip: data
                 }
-              });
-              
+              ).exec();
+
             }
 
             if (thing == 'ip') {
 
-              pi.last_update_local_ip = new Date();
-              pi.ip = data;
-              pi.save(function (err) {
-                if (err) {
-                  console.log(err);
+
+              pi.update(
+                { 
+                  last_update_ip: new Date(),
+                  ip: data
                 }
-              });
+              ).exec();
               
             }
 

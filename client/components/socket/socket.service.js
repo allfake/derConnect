@@ -186,9 +186,6 @@ angular.module('derConnectApp')
               });
             });
 
-
-
-
             array.splice(index, 1, item);
             event = 'updated';
             
