@@ -220,7 +220,16 @@ module.exports = function (socketio) {
 
             if (uuid) {
 
-              userSocket[pi.user_id].emit("pi:receive:" + thing + ":" + serialNumber + ":" + uuid, data);
+              for (var i = pi.devices.length - 1; i >= 0; i--) {
+                if (pi.devices[i].uuid == uuid) {
+                  pi.devices[i].receive[0].data = data;
+                  pi.save(function (err) {
+                    if (err) {
+                      console.log(err);
+                    }
+                  });
+                }
+              };
 
             } else if (!uuid) {
 
