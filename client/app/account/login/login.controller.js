@@ -2,6 +2,10 @@
 
 angular.module('derConnectApp')
   .controller('LoginCtrl', function ($scope, Auth, $location, $window) {
+
+    $('body').loading('stop');
+    $('body').loading('stop');
+
     $scope.user = {};
     $scope.errors = {};
     $scope.user.email = "test@test.com";

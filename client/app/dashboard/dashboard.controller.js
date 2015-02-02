@@ -2,11 +2,12 @@
 
 angular.module('derConnectApp')
   .controller('DashboardCtrl', function ($scope, $http, socket, Auth, $modal) {
+
+    $('body').loading();
     $scope.pis = [];
     $scope.pi = {};
     $scope.pi.newSerialNumber = "";
 
-    $('body').loading();
 
     $http.get('/api/deviceTypes/').success(function(deviceTypes) {
 
@@ -140,8 +141,8 @@ angular.module('derConnectApp')
       });
     }
 
-    $scope.takeAction = function (pi, action) {
-      socket.piAction(pi, action);
+    $scope.takeAction = function (pi, device, action) {
+      socket.piAction(pi, device, action);
     }
 
     $scope.addSchedule = function(pi, device, schedule) {

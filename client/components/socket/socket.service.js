@@ -37,7 +37,9 @@ angular.module('derConnectApp')
         socket.emit('pi:action', 'playsound');
       },
 
-      piAction: function(pi, action) {
+      piAction: function(pi, device, action) {
+        action.uuid = device.uuid;
+        action.type = device.type;
         socket.emit('pi:action', action);
       },
 
